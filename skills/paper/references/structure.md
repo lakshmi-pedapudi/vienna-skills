@@ -39,11 +39,13 @@ Conventions inside the skeleton:
 - Contributions are a numbered list; datasets and code releases appear there with links once live, written as done rather than planned.
 - Baselines, principles, modules, routes, configurations, and experiments carry short ids (B0, P1, M0, S1, E1) defined once in a table.
 - Every table is followed by a short paragraph that reads the numbers and names the takeaway.
+- Subsection titles come from the names the paper's own category table already uses, not from a fresh vocabulary invented for the headings.
 - An Error Analysis subsection exists in every Results section. Its load-bearing figure is the error distribution across the categories the domain cares about, whatever the modality.
 - Cost, latency, and deployability sit beside accuracy in the results, not in an afterthought.
 - Human review or expert evaluation gets its own subsection, with the study design stated plainly (blind test, n questions, k experts, preference counts) and no sensationalized percentage.
 - Concepts a method depends on (evaluation platform, curated data) appear before the Methodology section that uses them.
-- Limitations own a section in the 2026 papers; earlier papers kept it as a Discussion subsection. Either is fine; it must exist.
+- Limitations: the author has ruled both ways and the ruling is per paper. Earlier drafts kept a Limitations section ("it must exist"); at publish time on another paper the instruction was "No Limitations to be mentioned anywhere. Only Future work." Ask which applies and record it in the status memory. Under the Future-Work-only ruling, each load-bearing caveat moves next to the result it qualifies, in one sentence, rather than being collected into a section that reads as a list of weaknesses. Nothing load-bearing is dropped in the move.
+- A table whose only job is to explain a metric, or to repeat a comparison the paper already made, moves to an appendix: "Move Table 17 and associated content to appendix. it is adding confusion... these are redundant." If the paper has no appendix, cut it or demote it to bullets. It does not stay in the body for completeness.
 - "Open-Source Contributions" as a standalone section became a release-plan paragraph inside Limitations in the LaTeX fold.
 
 ## Appendix A: Source Index

@@ -75,7 +75,8 @@ arxiv_paper/
 - The LaTeX draft is a tightened fold of the artifact (16 sections from 21, 12 from 15). The README carries a Section Map table listing folds, merges, and drops with reasons. Apply the same folds to the artifact only if asked (it renumbers every reference).
 - Macros: `\todo{...}` (rust, bracketed, states what will appear, where it comes from, what blocks it), `\pilot` (superscript p on pilot-scale numbers), `\flag{...}` (rust tint on a proposed or problematic value). The SFT paper used `\placeholder{...}` in red. No bare `TBD`.
 - Build with tectonic (`brew install tectonic`), Graphviz `dot`, `rsvg-convert`. `./build.sh` must compile clean before any commit.
-- Author block: the organisation affiliation, corresponding author email, equal-contribution asterisks, provisional order noted as a dated open item until confirmed.
+- Author block: the organisation affiliation, equal-contribution asterisks, provisional order noted as a dated open item until confirmed. A corresponding-author email goes in only when the author confirms an address that will outlive the submission; an address being deactivated goes nowhere near the paper, and a paper may ship with no corresponding author at all.
+- Experiment ownership and draft ownership are separate, and the author will correct a wrong attribution ("experiments owner is aakash. not lakshmi. lakshmi just owns the draft"). Confirm who ran which experiments before the author block or any contributions line ships.
 - One master per format. The SFT paper drifted between `main.tex` and `main_updated.tex`, then `main.tex` and `main_ieee.tex`; the author had to ask "which file did you update?" four times. If two formats must coexist they share `sections/`, and every edit names the files it touched.
 
 ## 5. Update Guide Pattern
@@ -92,6 +93,26 @@ When results are still landing, write `PAPER_UPDATE_GUIDE.md` in the paper folde
 - Sweep the whole document after any rename or number change. Half-updated documents ("the results section still shows the old numbers for two of the models") are the most common complaint. A changed result is propagated in one pass to every carrier: `00_abstract` Main Results, `01_intro` Contributions, the Results table and its reading paragraph, `NN_conclusion`, `figures/make_charts.py` inputs and the regenerated chart, any `.dot` label or caption that carried the value, the artifact's matching sections, and the status memory's authoritative-numbers list. Run `scripts/check_number_placement.py arxiv_paper/` afterwards; a chart older than its CSV or a value still quoted outside the four homes fails the sweep.
 - When the author pastes an independent review from another model or person: judge each comment on merit, adopt what holds, say what does not and why. "Don't deviate too far based on just this review."
 - When the author supplies a subsection verbatim, insert it faithfully (bold lead-in bullets are fine), add its citations to the references section, and do not rewrite it.
+
+## 6a. Collaborative Reconciliation
+
+When a co-author or reviewer edits their own copy (their own artifact, their own branch), converge on one master and let every other surface follow it: "Let's maintain one paper that we can collaboratively edit on - which will be the arxiv - main.pdf."
+
+- Build a differences sheet before changing anything: one row per difference, a one-line statement of the section's purpose, their version, our version, and an empty Comments column for the author to fill. One CSV plus one README in a dedicated folder.
+- Reconcile only after the sheet comes back filled, row by row, content differences before style ones.
+- Take the hard content wins from their draft and keep this skill's rules for everything else.
+- A section their version explains better is merged at the same length, not appended.
+
+## 6b. Page Reduction
+
+Cutting to a page target is a plan the author approves before execution, with per-item savings. The levers, in order of least damage:
+
+- **A. Layout.** Margins, table and caption font size, float separation, list spacing.
+- **B. Figure geometry.** Size each figure to its content; drop the default full text width.
+- **C. Table surgery.** Merge related tables, restructure wide ones as two side by side, demote an explanatory table to bullets, move a redundant one to the appendix.
+- **D. Content reframing and cuts.** Collapse prose into numbered points, cut edge-case disclaimers, drop a model or variant the author has already deprioritised.
+
+Two-column layout is not a lever. It was proposed once and refused: "Implement A+B+C+D. DO NOT implement E." One paper went from 32 pages to 23 on A to D alone, with no result, table column, figure or worked example lost.
 
 ## 7. Session Close and Hand-off
 

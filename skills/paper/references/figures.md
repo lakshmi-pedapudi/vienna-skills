@@ -24,7 +24,10 @@
 - Decision nodes name their criteria (case, coverage, reliability, cost, latency).
 - Comparing options: draw the difference, side by side, with the edge each option adds or removes.
 - Labels are plain words. If a label confuses a reader ("Route"), rename it in the figure and the text together.
-- Pipeline figures: main flow as boxes, intermediate operations in parentheses on the arrows, no overlapping boxes, aligned baselines.
+- Pipeline figures: main flow as boxes, intermediate operations in parentheses on the arrows, no overlapping boxes, aligned baselines. Three or four rows of connected boxes beat one long chain.
+- Size the figure to its content, not to the text width by default. Shrink the figure and its font together, then check the rendered page for text touching or crossing a box boundary: "reduce the size of the overall figure. take care of text overlap with box boundaries."
+- A multi-stage funnel carrying many numbers reads better as a funnel figure with one worked example per stage than as a table: "table is very confusing with the numbers." This sits beside the opposite lesson ("a confusing figure loses to a simple table"); pick the form the reader parses faster and say which was chosen and why.
+- Add a worked example beside any definition, label set or pair taxonomy. An example column earns its width.
 - Coverage charts show the full tail (to near 100%) with the named thresholds (Top 20, Top 30, Top 40) marked.
 - Error distribution by category is the load-bearing figure for any recognition-error paper, with a concrete row-level example beside the aggregate. The category set comes from the domain; an agronomy pipeline used crop, pest or disease, chemical or fertilizer, unit or dose, practice, general.
 - Unflattering numbers stay, in context, never as a hero stat: "X% rejected at the quality gate before diagnosis runs", not a bare "X%".
@@ -46,7 +49,8 @@ Specify, render, review, integrate. The author supplies or approves a node-and-e
 
 - LaTeX tables use `booktabs` (`\toprule`, `\midrule`, `\bottomrule`), no vertical rules, `tabularx` when a text column must wrap. The house preamble loads both.
 - Fit the column. Tighten spacing, abbreviate headers, or span two columns (`table*`) before shrinking below legibility. Splitting a table is a last resort and an aesthetic call to make explicitly.
-- Bold the best value per column and state the rule in a table note. Bold the best row per language block when the table is grouped.
+- Bold the best value per column and state the rule in a table note. Bold the best row per language block when the table is grouped. Green and bold where the document uses colour; never red for a good value.
+- Yes/No columns become green ticks and red crosses. Captions stay inside the 15-to-20-word cap in `style.md`; overflow becomes a note line under the table.
 - One row per model; where a best-speaker variant exists, show only that variant.
 - Percentages over counts; drop Median and N columns unless they carry the argument; show declined or abstained share as its own column; state the row basis in the caption.
 - Merge paired columns into one intuitive label and use the same label in the body.

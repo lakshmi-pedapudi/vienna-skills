@@ -65,6 +65,8 @@ Phases repeat. New results land over weeks; each landing goes through 1, 3, 4, 5
 - No em-dashes anywhere. Not in prose, LaTeX (`---`), or HTML (`&mdash;`).
 - Banned words: arm, instrument, license, contract, ground (as filler), leverage, robust, seamless, delve, unlock. Source documents use "arm" constantly; re-check after every paste. Run `scripts/check_style.sh` before every publish or commit.
 - Bullets, numbered points, tables, charts, and flowcharts over prose. "Crisp language." Formal noun-phrase headings in Title Case, Arabic numbering (1, 1.1, 1.1.1).
+- Language a ten-year-old can follow, with the numbers kept. Every metric defined in one line before first use; short ids spelled out in prose ("Baseline 0", not "B0"); no caption over 15 to 20 words, with the overflow as a note line under the table.
+- The version being published reads as finished: no pending language, no draft markers, and no mention of a personal-information review. Whether it carries a Limitations section or only Future Work is a per-paper decision recorded in the status memory.
 - Never fabricate a number, a citation, a model name, or an example presented as real. Every tabulated result has a supporting file in `materials/` or `results/`; otherwise it is flagged for manual review.
 - Pilot, provisional, and LLM-judged numbers are marked as such (`\pilot`, `\flag`, `.pend`, asterisk) and never presented as final. Results, Discussion, and Impact stay empty until real experiment data exists.
 - Superseded numbers are listed in the status memory and Appendix B with "must not be reused".
@@ -86,6 +88,7 @@ Phases repeat. New results land over weeks; each landing goes through 1, 3, 4, 5
 | The critical-review prompt, review passes, CRITICAL_REVIEW.md format, citation audit, checkpoint questions, convergent review loop | `references/review.md` |
 | Palette, DOT/SVG, charts, table fitting, figure placement | `references/figures.md` |
 | arXiv package, format choice, author block, known compile errors, HF links | `references/submission.md` |
+| Collaborative reconciliation, page-reduction levers | `references/workflow.md` §6a, §6b |
 | Dated corrections and pushbacks, rationalization table | `references/lessons.md` |
 
 ## Red Flags
@@ -101,6 +104,9 @@ Stop and re-read the relevant reference when any of these appear in your own out
 - A figure or table that cannot be located by number, or that lands pages after the section that references it.
 - Two master files (for example `main.tex` and `main_updated.tex`) diverging.
 - An accuracy, error rate, cost or latency value quoted in a Method, Module, Data, Design, Discussion or Limitations section, in a caption, or in a `.dot` label.
+- A caption running past one line, a metric used before it is defined, or a bare `B0` in prose.
+- "Not yet measured", "pending", a `\todo`, or a personal-information review named in a version about to be published.
+- A second copy of the paper being edited elsewhere with no differences sheet, or a page cut that reaches for two columns.
 - A result changed in the Results table but not in the Abstract, Introduction, Conclusion, or the chart that draws it.
 
 ## Session Close
