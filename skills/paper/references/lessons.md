@@ -167,6 +167,12 @@ Dated, verbatim where possible. These are the moments the author stopped the wor
   the point is F1 vs WER comparison, move it to appendix. these are redundant." With no appendix, cut or demote to
   bullets.
 
+- 2026-09-17: applying the caption cap to a finished draft turns prose into points, and points take more vertical
+  space than prose: the paper grew a page. Tighter `\intextsep` and `\textfloatsep` paid it back. Budget a layout
+  pass after any prose-to-points round.
+- 2026-09-17: moving caption text into note lines under the table also clears the number-placement gate's caption
+  warnings (15 to 5 on one paper), because a note line is not a caption. The denominators stay visible either way.
+
 ## Rationalization Table
 
 | Thought | Reality |

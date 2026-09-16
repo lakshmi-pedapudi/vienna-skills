@@ -1,6 +1,6 @@
 # Lessons: Corrections and Pushbacks
 
-Dated, verbatim where possible. These are the moments the author stopped the work. Read them as tests the next page must pass. Sources: funder pre-read (Aug 2026), Resolution Signal (Aug 2026), methodology article (Jul 2026), The Gate and the Gap (Sep 2026), Follow-Up Query Analytics (Sep 2026), paper artifacts (Sep 2026), the survey vendor pages (Apr 2026).
+Dated, verbatim where possible. These are the moments the author stopped the work. Read them as tests the next page must pass. Sources: Gates VLM pre-read (Aug 2026), Resolution Signal (Aug 2026), methodology article (Jul 2026), The Gate and the Gap (Sep 2026), Follow-Up Query Analytics (Sep 2026), paper artifacts (Sep 2026), Plotline pages (Apr 2026).
 
 Each quote belongs to the page it was said about. The correction generalises; the subject, the vendor, the model name and the number do not. Nothing here is a figure for the page in front of you.
 
@@ -21,13 +21,13 @@ Each quote belongs to the page it was said about. The correction generalises; th
 - 2026-08-11: "'What happens to a photograph today' -> I don't like this kind of phrasing. I'd rather prefer simpler dry titles like 'Current Pipeline'."
 - 2026-08-17: "Model Comparison: Crop and Disease Accuracy -> Say instead - Model Comparison: Different Models, Different Strengths."
 - 2026-08-17: "change 'often' to 'sometimes'."
-- 2026-08-16: "Quality gate - say gpt based LLM check instead of Paid service." 2026-08-13: "change 'paid service' references to the vendor pls." 2026-09-09: "You can use 'the vendor' instead of 'Paid Baseline' everywhere."
+- 2026-08-16: "Quality gate - say gpt based LLM check instead of Paid service." 2026-08-13: "change 'paid service' references to Plantix pls." 2026-09-09: "You can use 'Plantix' instead of 'Paid Baseline' everywhere."
 - 2026-08-16: "Also probably need to mention somewhere that DaViT means Dual Attention Vision Transformer."
 
 ## Standalone and Self-Reference
 
 - 2026-08-19: "this artifact should not contain any self references or the process we followed or references to a person or gates foundation or anything like that. it is a self contained entity that any random person reading can understand."
-- 2026-08-16: "Remove references to sentences like these - 'Also flagged from the data, outside the CEO's five'. also time to do a review of the entire doc - remove all self references or references to people or internal documents. also do a style check based on the rules set earlier."
+- 2026-08-16: "Remove references to sentences like these - 'Also flagged from the data, outside Rikin's five'. also time to do a review of the entire doc - remove all self references or references to people or internal documents. also do a style check based on the rules set earlier."
 - 2026-08-16: "Remove the 'Changes in this version' section ... No reference to internal artifacts or names or documents. Make it sound like a first version, fresh upload."
 - 2026-08-15: "you can skip this disclaimer altogether - 'Bucket 9 is new ... That screen still needs to happen before this bucket can ship.'"
 - 2026-08-15: "None of this is built yet. It's the direction everything above is pointing us toward. -> Change this to 'Our internal pipeline for continuous improvement'."
@@ -61,7 +61,7 @@ Each quote belongs to the page it was said about. The correction generalises; th
 - 2026-09-06: "the section with Geography & language does not indicate any bar showing the percentages. the bars are static, only the numbers are written on side." "the flow chart has some overlapping text."
 - 2026-08-17: "no this table is confusing or overwhelming. need a better visualization to show top 4 crops by country."
 - 2026-08-17: "the Image vs Text column - too much detail in a single table. overwhelming. let's reverse this, and make it a new table ... In the current table, remove the explanations."
-- 2026-08-17: "Model comparison table -> Davit and Qwen-FT are our planned deployment models, Gemini and the vendor are existing baselines. Can you highlight those rows in separate colors?"
+- 2026-08-17: "Model comparison table -> Davit and Qwen-FT are our planned deployment models, Gemini and Plantix are existing baselines. Can you highlight those rows in separate colors?"
 - 2026-08-17: "brown bars have to say held out somewhere near the barplot, otherwise it is not clear. and '8 Models One Question' is getting obstructed by some legend."
 - 2026-08-17: "8 independent opinions - can you make it a small bar chart with different color bars for the 5 models and 3 held out models? That way, you don't need another sub-section."
 - 2026-08-17: "I want to show that the validation and test datasets will go for human review, not just write it. how could that be visually shown?" "Human review part needs to be a little more prominent both in style and font and maybe just a little flashy."
@@ -119,4 +119,12 @@ A fresh agent with no skill wrote a funder pre-read from a small materials folde
 
 ## With-Skill Trial, 2026-09-14
 
-Same task, same materials, skill loaded. Five sections with status pills, one paragraph on the whole page, nineteen list items, three inline SVGs (flowchart with structure only, monthly bars, latency waterfall with widths tied to seconds), two tables with in-cell bars and row tints, a pending box for the disease column, the vendor and model names used, both rejection denominators named, tildes on the five-trace latency figures, three-state theme, gate 0 failures 0 warnings. The trial exposed a defect in the skeleton template (the numbered-list grid split the bold lead-in from its text, one word per line), fixed in the template. The agent found it by rendering the page in a headless browser and reading it, which is the step the rule "open the live page and look" exists for.
+Same task, same materials, skill loaded. Five sections with status pills, one paragraph on the whole page, nineteen list items, three inline SVGs (flowchart with structure only, monthly bars, latency waterfall with widths tied to seconds), two tables with in-cell bars and row tints, a pending box for the disease column, Plantix and model names used, both rejection denominators named, tildes on the five-trace latency figures, three-state theme, gate 0 failures 0 warnings. The trial exposed a defect in the skeleton template (the numbered-list grid split the bold lead-in from its text, one word per line), fixed in the template. The agent found it by rendering the page in a headless browser and reading it, which is the step the rule "open the live page and look" exists for.
+
+- 2026-09-17: one regex applied across a whole page to move a `<p>` out of every `<figcaption>` matched across figure
+  boundaries: three notes stayed inside their captions and three stray `</figcaption>` tags landed after table
+  elements. Structural moves are done with exact per-element anchors, and verified by walking each `<figure>` and
+  counting its open and close tags before republishing.
+- 2026-09-17: the page's own indentation is the anchor's weakest part. Six-space indentation was assumed to be eight
+  and five of twenty-four edits silently matched nothing. Anchor on inner content, assert the match count, and print
+  the misses.
