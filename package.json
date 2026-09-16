@@ -1,0 +1,13 @@
+{
+  "name": "vienna-skills",
+  "version": "1.0.0",
+  "description": "Evidence-first Claude Code skills for research papers, slide decks and published HTML pages: /paper, /deck, /artifact",
+  "bin": { "vienna-skills": "bin/vienna-skills" },
+  "files": ["bin", "skills", "docs", "install.sh", "README.md", "LICENSE", ".claude-plugin"],
+  "scripts": { "test": "bash bin/vienna-skills list" },
+  "repository": { "type": "git", "url": "git+https://github.com/lakshmi-pedapudi/vienna-skills.git" },
+  "homepage": "https://github.com/lakshmi-pedapudi/vienna-skills#readme",
+  "keywords": ["claude-code", "codex", "skills", "research-paper", "arxiv", "latex", "slides", "python-pptx", "claude-artifacts", "anthropic"],
+  "author": "Lakshmi Pedapudi",
+  "license": "MIT"
+}

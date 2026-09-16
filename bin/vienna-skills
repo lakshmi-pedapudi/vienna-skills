@@ -1,0 +1,130 @@
+#!/usr/bin/env bash
+# vienna-skills: install, update, list, check and remove the skills in this package.
+#
+#   vienna-skills install   [--target claude|codex|agents|all] [--copy]
+#   vienna-skills update    [--target ...]        npm update (or git pull), then relink
+#   vienna-skills uninstall [--target ...]
+#   vienna-skills list                            skills in the package and where they are linked
+#   vienna-skills doctor                          links resolve, script prerequisites present
+#   vienna-skills help | version
+#
+# Skills are discovered from skills/*/SKILL.md, so adding a folder is enough.
+# Non-interactive: an existing real directory at a target is backed up with a timestamp.
+set -euo pipefail
+
+VERSION="1.0.0"
+SRC="${BASH_SOURCE[0]}"
+while [ -L "$SRC" ]; do
+  d="$(cd -P "$(dirname "$SRC")" && pwd)"; SRC="$(readlink "$SRC")"; [[ "$SRC" != /* ]] && SRC="$d/$SRC"
+done
+ROOT="${VIENNA_SKILLS_SOURCE_DIR:-$(cd "$(dirname "$SRC")/.." && pwd)}}"
+TARGET="${VIENNA_SKILLS_TARGET:-claude}"; MODE="link"
+
+usage() { sed -n '2,12p' "$0" | sed 's/^# \{0,1\}//'; }
+
+dirs_for() {
+  case "$1" in
+    claude) echo "$HOME/.claude/skills" ;;
+    codex)  echo "$HOME/.codex/skills" ;;
+    agents) echo "$HOME/.agents/skills" ;;
+    all)    echo "$HOME/.claude/skills $HOME/.codex/skills $HOME/.agents/skills" ;;
+    *) echo "unknown target: $1 (claude|codex|agents|all)" >&2; exit 2 ;;
+  esac
+}
+
+skills() { for d in "$ROOT"/skills/*/; do [ -f "$d/SKILL.md" ] && basename "$d"; done; }
+
+desc_of() { sed -n 's/^description: *//p' "$ROOT/skills/$1/SKILL.md" | head -1 | cut -c1-96; }
+
+do_install() {
+  for dest in $(dirs_for "$TARGET"); do
+    mkdir -p "$dest"
+    for name in $(skills); do
+      link="$dest/$name"; src="$ROOT/skills/$name"
+      if [ -L "$link" ]; then rm "$link"
+      elif [ -d "$link" ]; then mv "$link" "$link.bak.$(date +%Y%m%d%H%M%S)"; echo "backed up  $link"
+      fi
+      if [ "$MODE" = "copy" ]; then cp -R "$src" "$link"; echo "copied     $link"
+      else ln -s "$src" "$link"; echo "linked     $link -> $src"
+      fi
+    done
+  done
+  echo; echo "Installed: $(skills | tr '
+' ' ')"
+  echo "Run 'vienna-skills doctor' to check prerequisites."
+}
+
+do_uninstall() {
+  for dest in $(dirs_for "$TARGET"); do
+    for name in $(skills); do
+      link="$dest/$name"
+      if [ -L "$link" ]; then rm "$link"; echo "removed    $link"
+      elif [ -d "$link" ] && [ -f "$link/SKILL.md" ] && grep -q "^name: $name" "$link/SKILL.md"; then rm -rf "$link"; echo "removed    $link (copy)"
+      fi
+    done
+  done
+}
+
+do_list() {
+  echo "vienna-skills $VERSION  ($ROOT)"; echo
+  for name in $(skills); do
+    printf '  /%-10s %s
+' "$name" "$(desc_of "$name")"
+    for dest in $(dirs_for all); do
+      link="$dest/$name"
+      if [ -L "$link" ]; then
+        if [ -e "$link" ]; then printf '             linked  %s
+' "$dest"; else printf '             BROKEN  %s
+' "$dest"; fi
+      elif [ -d "$link" ]; then printf '             copied  %s
+' "$dest"; fi
+    done
+  done
+}
+
+do_doctor() {
+  bad=0
+  for dest in $(dirs_for all); do
+    for name in $(skills); do
+      link="$dest/$name"
+      if [ -L "$link" ] && [ ! -e "$link" ]; then echo "BROKEN link: $link"; bad=1; fi
+    done
+  done
+  command -v python3 >/dev/null || { echo "missing: python3"; bad=1; }
+  python3 - <<'EOF' || bad=1
+import importlib, sys
+missing = [m for m in ("pptx", "matplotlib", "PIL") if importlib.util.find_spec(m) is None]
+print("python modules:", "ok" if not missing else "missing " + ", ".join(missing) + "  (pip install python-pptx matplotlib pillow)")
+sys.exit(1 if missing else 0)
+EOF
+  command -v dot >/dev/null && echo "graphviz dot: ok" || { echo "graphviz dot: missing (brew install graphviz)"; bad=1; }
+  command -v perl >/dev/null && echo "perl: ok" || { echo "perl: missing"; bad=1; }
+  [ "$bad" = 0 ] && echo "doctor: healthy" || { echo "doctor: fix the items above"; exit 1; }
+}
+
+do_update() {
+  if [ -d "$ROOT/.git" ]; then (cd "$ROOT" && git pull --ff-only)
+  else npm update -g vienna-skills || echo "npm update failed; run it by hand"
+  fi
+  do_install
+}
+
+cmd="${1:-help}"; shift || true
+while [ $# -gt 0 ]; do
+  case "$1" in
+    --target|-t) TARGET="$2"; shift 2 ;;
+    --target=*) TARGET="${1#--target=}"; shift ;;
+    --copy) MODE="copy"; shift ;;
+    *) echo "unknown option: $1" >&2; usage; exit 2 ;;
+  esac
+done
+case "$cmd" in
+  install) do_install ;;
+  uninstall) do_uninstall ;;
+  list|ls) do_list ;;
+  doctor) do_doctor ;;
+  update) do_update ;;
+  version|-v|--version) echo "$VERSION" ;;
+  help|-h|--help) usage ;;
+  *) echo "unknown command: $cmd" >&2; usage; exit 2 ;;
+esac

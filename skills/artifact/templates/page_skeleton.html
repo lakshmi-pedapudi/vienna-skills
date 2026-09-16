@@ -1,0 +1,114 @@
+<title>Page Name</title>
+<style>
+  :root {
+    --bg:#F6F5EF; --bg-raised:#FFFFFF; --ink:#14170F; --ink-soft:#464B39; --ink-faint:#868D7D;
+    --line:#DCDACD; --accent:#A6472B; --accent-soft:#F4E3DB; --green:#3E6350; --green-soft:#E3EAE1;
+    --blue:#435C7A; --blue-soft:#E4E9F0; --amber:#B4791C; --amber-soft:#F7EDDB; --critical:#A8452F;
+    --sans:"IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+    --mono:"IBM Plex Mono", ui-monospace, Menlo, monospace;
+    --serif:"Newsreader", "Source Serif 4", Georgia, serif;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg:#14170F; --bg-raised:#1B1F18; --ink:#ECEEE8; --ink-soft:#B7BBA9; --ink-faint:#868D7D;
+      --line:#33372A; --accent:#DD8362; --accent-soft:#2E1D15; --green:#84B294; --green-soft:#1F2A21;
+      --blue:#93AECD; --blue-soft:#1E2733; --amber:#D8AE5F; --amber-soft:#33372A; --critical:#E0685A;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg:#14170F; --bg-raised:#1B1F18; --ink:#ECEEE8; --ink-soft:#B7BBA9; --ink-faint:#868D7D;
+    --line:#33372A; --accent:#DD8362; --accent-soft:#2E1D15; --green:#84B294; --green-soft:#1F2A21;
+    --blue:#93AECD; --blue-soft:#1E2733; --amber:#D8AE5F; --amber-soft:#33372A; --critical:#E0685A;
+  }
+  body { background:var(--bg); color:var(--ink); font:15.5px/1.5 var(--sans); margin:0; padding-block:28px; padding-inline:16px; }
+  main { max-width:1080px; margin:0 auto; }
+  h1, h2, h3 { font-family:var(--serif); font-weight:600; letter-spacing:-0.01em; margin:0 0 .4em; }
+  h1 { font-size:2rem; } h2 { font-size:1.35rem; } h3 { font-size:1.05rem; }
+  .num, td.num, .tile .value { font-family:var(--mono); font-variant-numeric:tabular-nums; }
+  .status-card { display:flex; flex-wrap:wrap; gap:8px; margin:12px 0 28px; }
+  .chip { border:1px solid var(--line); border-radius:999px; padding:2px 10px; font-size:.8rem; color:var(--ink-soft); background:var(--bg-raised); }
+  .chip.src { font-family:var(--mono); font-size:.72rem; }
+  .pill { display:inline-block; border-radius:999px; padding:1px 9px; font-size:.72rem; font-weight:600; text-transform:uppercase; letter-spacing:.04em; vertical-align:middle; margin-left:8px; }
+  .pill.sourced { background:var(--green-soft); color:var(--green); }
+  .pill.outlined { background:var(--blue-soft); color:var(--blue); }
+  .pill.pending  { background:var(--amber-soft); color:var(--amber); }
+  section.card { background:var(--bg-raised); border:1px solid var(--line); border-radius:10px; padding:20px 22px; margin:0 0 18px; }
+  .sec-num { color:var(--ink-faint); font-family:var(--mono); font-size:.8rem; }
+  .sources { display:flex; flex-wrap:wrap; gap:6px; margin:6px 0 14px; }
+  .tiles { display:grid; grid-template-columns:repeat(auto-fit, minmax(160px, 1fr)); gap:12px; margin:12px 0; }
+  .tile { background:var(--bg); border:1px solid var(--line); border-radius:8px; padding:14px 16px; }
+  .tile .value { font-size:1.7rem; font-weight:600; color:var(--green); }
+  .tile .label { color:var(--ink-soft); font-size:.85rem; margin-top:4px; }
+  ol.points { padding-left:0; list-style:none; counter-reset:pt; margin:10px 0; }
+  ol.points li { counter-increment:pt; position:relative; padding-left:2.4rem; margin:0 0 8px; }
+  ol.points li::before { content:counter(pt, decimal-leading-zero); position:absolute; left:0; top:0; font-family:var(--mono); color:var(--accent); font-weight:600; }
+  ol.points b { font-weight:600; }
+  .table-wrap { overflow-x:auto; }
+  table { border-collapse:collapse; width:100%; font-size:.9rem; }
+  th { text-align:left; font-weight:600; color:var(--ink-soft); border-bottom:2px solid var(--line); padding:8px 10px; }
+  td { border-bottom:1px solid var(--line); padding:7px 10px; vertical-align:top; }
+  td.num, th.num { text-align:right; }
+  td.bar { position:relative; }
+  td.bar .fill { position:absolute; inset:4px auto 4px 0; background:var(--green-soft); z-index:0; border-radius:3px; }
+  td.bar span { position:relative; z-index:1; }
+  tr.ours td { background:var(--green-soft); }
+  tr.baseline td { background:var(--blue-soft); }
+  figure { margin:14px 0; }
+  figure svg { width:100%; height:auto; display:block; }
+  figcaption { color:var(--ink-faint); font-size:.85rem; margin-top:6px; }
+  .callout { border-left:4px solid var(--accent); background:var(--accent-soft); padding:10px 14px; border-radius:6px; margin:12px 0; }
+  .pend { border:1px dashed var(--amber); color:var(--amber); border-radius:6px; padding:8px 12px; font-size:.85rem; margin:10px 0; }
+  .row { display:flex; gap:12px; flex-wrap:wrap; }
+  .row > * { flex:1 1 260px; }
+  .scroll-box { max-height:220px; overflow-y:auto; border:1px solid var(--line); border-radius:6px; padding:8px 10px; background:var(--bg); }
+  @media print {
+    body { background:#fff; color:#000; }
+    section.card { break-inside:avoid; border-color:#ccc; }
+    .row { flex-wrap:nowrap; }
+    .tiles { grid-template-columns:repeat(4, 1fr); }
+    * { print-color-adjust:exact; -webkit-print-color-adjust:exact; }
+  }
+</style>
+
+<main>
+  <h1>Page Name</h1>
+  <div class="status-card">
+    <span class="chip">Draft · 14 Sep 2026</span>
+    <span class="chip">1,163,658 photographs</span>
+    <span class="chip">4 countries</span>
+  </div>
+
+  <section class="card" id="s1">
+    <div class="sec-num">01</div>
+    <h2>Current Pipeline <span class="pill sourced">sourced</span></h2>
+    <div class="sources"><span class="chip src">&lt;source file, internal pages only&gt;</span></div>
+    <figure>
+      <!-- inline SVG flowchart: four or five boxes, labelled arrows, no measurements, no title inside -->
+      <svg viewBox="0 0 900 120" role="img" aria-label="Pipeline: four stages in order, structure only, no measurements"></svg>
+      <figcaption>&lt;What the flowchart shows, and its basis. No values.&gt;</figcaption>
+    </figure>
+    <ol class="points">
+      <li><b>&lt;Stage one.&gt;</b> &lt;One plain sentence on what it decides.&gt;</li>
+      <li><b>&lt;Stage two.&gt;</b> &lt;One plain sentence.&gt;</li>
+      <li><b>&lt;Stage three.&gt;</b> &lt;One plain sentence.&gt;</li>
+    </ol>
+  </section>
+
+  <section class="card" id="s2">
+    <div class="sec-num">02</div>
+    <h2>Model Comparison <span class="pill outlined">outlined</span></h2>
+    <div class="tiles">
+      <div class="tile"><div class="value">&lt;value&gt;</div><div class="label">&lt;what it measures, on which slice, over how many rows&gt;</div></div>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Model</th><th class="num">&lt;Metric, narrow slice&gt;</th><th class="num">&lt;Metric, full set&gt;</th><th>Comments</th></tr></thead>
+        <tbody>
+          <tr class="ours"><td>&lt;our model&gt;</td><td class="num bar"><div class="fill" style="width:50%"></div><span>&lt;value&gt;</span></td><td class="num bar"><div class="fill" style="width:50%"></div><span>&lt;value&gt;</span></td><td></td></tr>
+          <tr class="baseline"><td>&lt;baseline&gt;</td><td class="num bar"><div class="fill" style="width:50%"></div><span>&lt;value&gt;</span></td><td class="num bar"><div class="fill" style="width:50%"></div><span>&lt;value&gt;</span></td><td></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="pend">Pending: &lt;what is not measured yet&gt;. Owner: &lt;team&gt;.</div>
+  </section>
+</main>

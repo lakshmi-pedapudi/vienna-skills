@@ -1,0 +1,6 @@
+key,slide,claim,value,row_set,source,status
+items_total,3,<What this counts and over what period>,<value>,<the row set this is drawn from>,<path to the file>,measured
+gate_rejected,4,Rejected at the quality gate,<value>,<share of what; name the denominator>,<path to the file>,measured
+vendor_cost_year,12,Vendor annual cost,<value and currency>,<what the price covers>,<where the price came from>,quoted
+selfhost_cost_month,12,Self-hosted monthly cost at current demand,<value>,cost model input,<path to the cost model>,assumed
+human_review,9,<Pending measurement>,pending,<what it is blocked on>,<path to the plan>,blocked
