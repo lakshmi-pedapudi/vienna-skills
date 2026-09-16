@@ -17,7 +17,7 @@ SRC="${BASH_SOURCE[0]}"
 while [ -L "$SRC" ]; do
   d="$(cd -P "$(dirname "$SRC")" && pwd)"; SRC="$(readlink "$SRC")"; [[ "$SRC" != /* ]] && SRC="$d/$SRC"
 done
-ROOT="${VIENNA_SKILLS_SOURCE_DIR:-$(cd "$(dirname "$SRC")/.." && pwd)}}"
+ROOT="${VIENNA_SKILLS_SOURCE_DIR:-$(cd "$(dirname "$SRC")/.." && pwd)}"
 TARGET="${VIENNA_SKILLS_TARGET:-claude}"; MODE="link"
 
 usage() { sed -n '2,12p' "$0" | sed 's/^# \{0,1\}//'; }
