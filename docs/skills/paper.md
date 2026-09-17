@@ -108,6 +108,8 @@ Stop and re-read the relevant reference when any of these appear in your own out
 - "Not yet measured", "pending", a `\todo`, or a personal-information review named in a version about to be published.
 - A second copy of the paper being edited elsewhere with no differences sheet, or a page cut that reaches for two columns.
 - A result changed in the Results table but not in the Abstract, Introduction, Conclusion, or the chart that draws it.
+- A difference, ratio, range or system count quoted in prose that was computed from a value the latest sweep changed.
+- A row dropped from a results table while figures measured on that model's own split stay in the paper.
 
 ## Session Close
 
