@@ -173,6 +173,22 @@ Dated, verbatim where possible. These are the moments the author stopped the wor
 - 2026-09-17: moving caption text into note lines under the table also clears the number-placement gate's caption
   warnings (15 to 5 on one paper), because a note line is not a caption. The denominators stay visible either way.
 
+- 2026-09-17: a label list that holds two classes for one crop (beet and sugar beet, pepper and chili pepper, bean
+  and common bean) silently scores one system's vocabulary as error. It cost the production baseline 12 points in a
+  headline table, more than any model difference in the same column. Before publishing a comparison, list each
+  system's predicted labels that never match any reference label, and check the row-level correspondence: a
+  prediction that meets one reference value on 472 of 484 rows is a spelling, not a mistake.
+- 2026-09-17: merging duplicate label classes is a correction to the label list, so it applies to every system and
+  gets re-run for all of them. Crediting an answer one level coarser than the reference (cucurbit for cucumber) is
+  something else, leniency, and it favours the models that hedge over the baseline that commits. Keep the two apart
+  and say which was chosen.
+- 2026-09-17: a predictions file from a collaborator carried the gold label in top-level `crop` and `disease` and the
+  model's answer in a nested `parsed` object. Auto-detecting field names by convention scores gold against gold and
+  returns 100%. Reproduce the sender's own reported figures first; if they do not match, the field mapping is wrong.
+- 2026-09-17: verify a collaborator's split-integrity claim rather than quoting it, and verify your own download
+  before contradicting their document. A truncated local copy of a training split read 84,198 of 88,227 rows with no
+  parse error, which looked like a discrepancy in their data and was not.
+
 ## Rationalization Table
 
 | Thought | Reality |
@@ -203,4 +219,8 @@ Dated, verbatim where possible. These are the moments the author stopped the wor
 | "Mentioning the PII review shows diligence" | It raises a question the paper does not answer. The repository handles it. |
 | "Two columns would solve the page count" | Refused outright. Layout, figure geometry, table surgery, then cuts. |
 | "Their draft says it better, so append their paragraph" | Merge at the same length into one master, after the differences sheet comes back filled. |
+| "The baseline just scores badly on this column" | Check its label vocabulary against the reference's first. One duplicated class cost 12 points. |
+| "Normalising more makes the comparison fairer" | Merging duplicate names is a fix. Crediting a coarser answer is leniency, and it picks a winner. |
+| "The predictions file's crop field is the prediction" | It was the gold label. Reproduce the sender's own numbers before scoring. |
+| "Their document's row count disagrees with the file, so their document is wrong" | Check your download finished. |
 | "Showing the open conflicts in the paper is the honest thing" | Internal reviewers read CRITICAL_REVIEW.md. The PDF states each gap once in reader-facing words; no status columns, superseded numbers, or reconciliation appendix. |
