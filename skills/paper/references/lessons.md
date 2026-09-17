@@ -102,6 +102,14 @@ Dated, verbatim where possible. These are the moments the author stopped the wor
   from the retired figures, and both gates passed because the values quoted were nowhere else in the paper. Sweep derived
   quantities too: differences, ratios, ranges ("15% to 56%"), counts of systems, and "N of M" statements. Recompute each
   one from the new table rather than reading it forward.
+- 2026-09-17: A `% number-ok:` exemption belongs at the END of its line and nowhere else. Placed mid-line to clear a
+  gate, it made LaTeX discard the rest of the sentence, and the PDF lost a pointer to the scoring tables with no
+  warning from any gate. Both gates and the build were clean; only reading the rendered page caught it. After adding
+  any LaTeX comment, check the built PDF for the sentence it sits in.
+- 2026-09-17: When a block is deleted for redundancy, grep for what pointed AT it before deleting. Three claims in
+  other sections were left standing on support that had just been cut: a headroom clause, a "best in the comparison"
+  cell, and an exclusion reason that then contradicted Limitations. A dropped row also renumbers subsections; check
+  the ones after it.
 - 2026-09-17: When a model is dropped from the results table, every figure measured on its own split dies with it. Before
   removing the row, list what only that model sourced (behaviour rates, confusion pairs, per-class readings) and decide
   per item: recompute on the surviving model's shared rows, or cut. Leaving them attributed to "the fine-tune" silently
