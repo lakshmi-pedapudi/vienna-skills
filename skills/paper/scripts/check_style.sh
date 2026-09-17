@@ -18,9 +18,27 @@ TELLS='\b[Gg]enuinely\b|\b[Pp]aramount\b|\bunderscor\w* the need\b|\bsweet spot\
 # Allowed literals that contain a banned stem: file names, the proper noun 'Grounding DINO', cite keys.
 ALLOW='arm_scores\w*|rebuild_arm_results\w*|grounding/|Grounding DINO|references\.bib|\\cite[tp]?\{[^}]*\}|\\bibitem\{[^}]*\}'
 
+# Expand any directory argument to the paper sources inside it. A bare directory used to be
+# skipped silently by the -f test below, which made the gate print "clean" having checked nothing.
+files=()
+for a in "$@"; do
+  if [ -d "$a" ]; then
+    while IFS= read -r line; do files+=("$line"); done < <(find "$a" -type f \( -name '*.tex' -o -name '*.html' \) ! -path '*/backups/*' ! -path '*/.git/*' | sort)
+  elif [ -f "$a" ]; then
+    files+=("$a")
+  else
+    echo "style gate: no such file or directory: $a" >&2
+    exit 2
+  fi
+done
+
+if [ "${#files[@]}" -eq 0 ]; then
+  echo "style gate: no .tex or .html sources matched $*" >&2
+  exit 2
+fi
+
 hits=0
-for f in "$@"; do
-  [ -f "$f" ] || continue
+for f in "${files[@]}"; do
   case "$f" in
     *.tex) DASH="$DASH_TEX" ;;
     *)     DASH="$DASH_MD" ;;

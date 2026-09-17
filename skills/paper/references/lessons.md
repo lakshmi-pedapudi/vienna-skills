@@ -102,6 +102,10 @@ Dated, verbatim where possible. These are the moments the author stopped the wor
   from the retired figures, and both gates passed because the values quoted were nowhere else in the paper. Sweep derived
   quantities too: differences, ratios, ranges ("15% to 56%"), counts of systems, and "N of M" statements. Recompute each
   one from the new table rather than reading it forward.
+- 2026-09-17: `check_style.sh <directory>` used to print "clean" having checked nothing, because its loop skipped
+  anything failing a `-f` test. Every "gate clean" run made against a folder was meaningless. Fixed to expand a
+  directory to the `.tex` and `.html` sources inside it and to exit 2 when nothing matched. Lesson for any gate:
+  make it report how many files it checked, and fail loudly on zero rather than passing silently.
 - 2026-09-17: A `% number-ok:` exemption belongs at the END of its line and nowhere else. Placed mid-line to clear a
   gate, it made LaTeX discard the rest of the sentence, and the PDF lost a pointer to the scoring tables with no
   warning from any gate. Both gates and the build were clean; only reading the rendered page caught it. After adding
