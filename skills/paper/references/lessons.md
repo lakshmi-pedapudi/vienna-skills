@@ -102,6 +102,12 @@ Dated, verbatim where possible. These are the moments the author stopped the wor
   from the retired figures, and both gates passed because the values quoted were nowhere else in the paper. Sweep derived
   quantities too: differences, ratios, ranges ("15% to 56%"), counts of systems, and "N of M" statements. Recompute each
   one from the new table rather than reading it forward.
+- 2026-09-17: The dominant defect across five review passes was not a wrong number but **a fix applied in one place
+  and not to its twin**: three of four share labels corrected and the fourth left wrong, an exclusion reason fixed in
+  two places and stale in a third, Future Work items added to the paper and never to the page. Aim a pass at that
+  shape directly: list every claim that appears more than once and check each group for agreement. Then close the
+  class by measurement, with a number-level diff between the two documents over every results cell and row count. The
+  diff finds reverse twins no reader raises, such as content cut from the paper still sitting in the page.
 - 2026-09-17: `check_style.sh <directory>` used to print "clean" having checked nothing, because its loop skipped
   anything failing a `-f` test. Every "gate clean" run made against a folder was meaningless. Fixed to expand a
   directory to the `.tex` and `.html` sources inside it and to exit 2 when nothing matched. Lesson for any gate:
