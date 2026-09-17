@@ -56,4 +56,4 @@ if [ "$hits" -gt 0 ]; then
   echo "style gate: $hits hit(s)" >&2
   exit 1
 fi
-echo "style gate: clean"
+echo "style gate: clean (${#files[@]} file(s) checked)"
