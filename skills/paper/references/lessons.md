@@ -102,6 +102,14 @@ Dated, verbatim where possible. These are the moments the author stopped the wor
   from the retired figures, and both gates passed because the values quoted were nowhere else in the paper. Sweep derived
   quantities too: differences, ratios, ranges ("15% to 56%"), counts of systems, and "N of M" statements. Recompute each
   one from the new table rather than reading it forward.
+- 2026-09-17: Build the submission package from a file list derived from the source, then **compile it from a clean
+  extract**, never from the project folder. A package that shipped the `.bbl` without the `.bib`, which is the usual
+  advice, compiled to a paper one page shorter with every citation rendered `[?]` and no References section, and the
+  build still reported success. The project folder hid it because the `.bib` was sitting there. Ship both, and treat
+  "the tarball compiles somewhere clean" as the only real proof.
+- 2026-09-17: Strip engine-specific directives before submission. `\special{pdf:minorversion 7}` is a dvipdfmx
+  directive that pdflatex, which is what arXiv runs, does not use; measurement showed it never took effect under
+  tectonic either. A guard was possible but deleting it was better: nothing left to behave differently.
 - 2026-09-17: The dominant defect across five review passes was not a wrong number but **a fix applied in one place
   and not to its twin**: three of four share labels corrected and the fourth left wrong, an exclusion reason fixed in
   two places and stale in a third, Future Work items added to the paper and never to the page. Aim a pass at that
