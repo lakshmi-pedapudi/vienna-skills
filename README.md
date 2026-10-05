@@ -20,27 +20,17 @@ Each skill is a folder with `SKILL.md` (overview, inputs, outputs, workflow, qua
 
 ## Install
 
-```bash
-npm install -g vienna-skills
-vienna-skills install                    # symlinks into ~/.claude/skills
-vienna-skills install --target all       # Claude Code, Codex (~/.codex/skills) and ~/.agents/skills
-vienna-skills list                       # what is installed where
-vienna-skills doctor                     # links resolve, python-pptx, matplotlib, dot, perl present
-vienna-skills update                     # npm update, then relink
-vienna-skills uninstall --target all
-```
-
-Or without installing globally:
-
-```bash
-npx vienna-skills install --target all
-```
-
-Or from a clone (the same CLI, run in place):
+From a clone (the CLI runs in place):
 
 ```bash
 git clone https://github.com/lakshmi-pedapudi/vienna-skills.git && cd vienna-skills
-bash install.sh --target all      # wraps bin/vienna-skills install
+bash install.sh --target all                 # wraps bin/vienna-skills install
+bin/vienna-skills install                    # symlinks into ~/.claude/skills
+bin/vienna-skills install --target all       # Claude Code, Codex (~/.codex/skills) and ~/.agents/skills
+bin/vienna-skills list                       # what is installed where
+bin/vienna-skills doctor                     # links resolve, python-pptx, matplotlib, dot, perl present
+bin/vienna-skills update                     # git pull, then relink
+bin/vienna-skills uninstall --target all
 ```
 
 Or as a Claude Code plugin:
@@ -50,7 +40,7 @@ Or as a Claude Code plugin:
 /plugin install vienna-skills@vienna-skills
 ```
 
-Skills are symlinked, so `npm update -g vienna-skills` or `git pull` refreshes them in place. Prerequisites for the scripts: `python3` with `python-pptx`, `matplotlib`, `pillow` (deck), Graphviz `dot` (deck and paper figures), `perl` (paper style gate). References write script paths as `<skill-dir>`, wherever the skill is installed. Deck build scripts read it from `DECK_SKILL_DIR` (default `~/.claude/skills/deck`).
+Skills are symlinked, so `git pull` (or `bin/vienna-skills update`) refreshes them in place. Prerequisites for the scripts: `python3` with `python-pptx`, `matplotlib`, `pillow` (deck), Graphviz `dot` (deck and paper figures), `perl` (paper style gate). References write script paths as `<skill-dir>`, wherever the skill is installed. Deck build scripts read it from `DECK_SKILL_DIR` (default `~/.claude/skills/deck`).
 
 ## Adaptation
 
