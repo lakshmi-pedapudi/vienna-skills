@@ -6,7 +6,7 @@ A comment on one slide is usually a style rule for the whole deck, and it lands 
 
 ## How Comments Arrive
 
-1. A copy of the deck saved as `<deck>_review.pptx` with a text box per comment, each starting with the agreed reviewer prefix (default `REVIEW:`). Extract with `scripts/extract_review_comments.py <deck>_review.pptx [--prefix "<prefix>:"]`. Notes-pane paragraphs with the prefix are included.
+1. A copy of the deck saved as `<deck>_review.pptx` with a text box per comment, each starting with the agreed reviewer prefix (default `REVIEW:` or `Reviewer:`). Extract with `scripts/extract_review_comments.py <deck>_review.pptx [--prefix "<prefix>:"]`. Notes-pane paragraphs with the prefix are included.
 2. Google Slides comments on a shared copy.
 3. A numbered list in chat or at the top of the draft markdown. Apply item by item.
 4. Reviewer mail relayed by the deck owner, often as Remove and Add lists. Apply literally, item by item, and keep a closure ledger.

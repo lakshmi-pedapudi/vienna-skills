@@ -56,7 +56,7 @@ Skills are symlinked, so `npm update -g vienna-skills` or `git pull` refreshes t
 
 - Palettes and typography are constants at the top of `skills/deck/scripts/deck_primitives.py` and in `skills/artifact/templates/page_skeleton.html`. Replace the corporate example with your brand once; everything downstream reads it.
 - House word lists are config files, not code: `skills/paper/scripts/banned_words.txt` and `allow.txt`, `skills/deck/scripts/house_words.json`, `skills/artifact/scripts/house_words.json`. Edit them to your house style, or point a gate at another file with `--words`. Built-in checks (em-dashes, AI-tell and hype phrases, sentence-shape warnings) stay in the scripts.
-- The review-comment prefix defaults to `REVIEW:`; pass `--prefix` (repeatable) to `extract_review_comments.py` for your own. The figures-registry columns are documented in `skills/deck/references/build.md`.
+- The review-comment prefix defaults to `REVIEW:` (the 1.0 default `Reviewer:` still matches); pass `--prefix` (repeatable) to `extract_review_comments.py` for your own. The figures-registry columns are documented in `skills/deck/references/build.md`.
 - `references/pitfalls.md` in each skill lists the rationalisations and failure modes that the rules exist to stop, each pointing to the file that holds its rule. Add your own as rules in the relevant reference file, with a one-line reason.
 
 ## Changes in 1.1.0
@@ -65,7 +65,7 @@ Skills are symlinked, so `npm update -g vienna-skills` or `git pull` refreshes t
 - `references/lessons.md` is replaced by `references/pitfalls.md`. The dated corrections are condensed into rules with reasons inside the reference files.
 - New "Sentence Shapes" rules in all three style guides ("not A, but B" pivots, padded lists, stacked adjectives, taglines, recap endings, narrated structure). Paper and artifact gates warn on them; all gates fail on hype phrases.
 - House word lists moved to config files. New options: `--allow` and a per-paper `.paper-style-allow` (paper), `--words`, `--codes`, `--external` (deck words), `--exempt-file` (deck figures, paper numbers), `--words` and `--id-pattern` (artifact).
-- Deck: the review-comment prefix default is `REVIEW:`; build scripts locate the skill through `DECK_SKILL_DIR`.
+- Deck: the review-comment prefix default is `REVIEW:`, and the 1.0 default `Reviewer:` still matches; build scripts locate the skill through `DECK_SKILL_DIR`.
 - Paper: the number-placement gate reports correct line numbers after tables and maths.
 - Artifact: paragraph and section thresholds match the style rules; the script CDN allowlist is cdnjs and jsdelivr/npm only.
 

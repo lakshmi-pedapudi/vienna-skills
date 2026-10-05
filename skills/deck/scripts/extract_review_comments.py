@@ -1,7 +1,7 @@
 """Print reviewer comments left as text boxes on a copy of a deck.
 
 A reviewer saves <deck>_review.pptx and adds a text box per comment whose text starts with
-an agreed prefix (default "REVIEW:"). Speaker-notes paragraphs that start with the prefix
+an agreed prefix (default "REVIEW:" or "Reviewer:"). Speaker-notes paragraphs that start with the prefix
 count too. Each comment becomes a numbered rule in the project rules file plus a slide
 rebuild; log the mapping in the review-integration table.
 
@@ -33,9 +33,9 @@ def main():
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     ap.add_argument("deck")
     ap.add_argument("--prefix", action="append", default=None,
-                    help='comment prefix, repeatable (default: "REVIEW:")')
+                    help='comment prefix, repeatable (default: "REVIEW:" and "Reviewer:")')
     a = ap.parse_args()
-    prefixes = a.prefix or ["REVIEW:"]
+    prefixes = a.prefix or ["REVIEW:", "Reviewer:"]
     prs = Presentation(a.deck)
     n = 0
     for i, s in enumerate(prs.slides, 1):

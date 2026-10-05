@@ -13,7 +13,7 @@ Read this file first in any session that touches `build_deck.py` or `<deck>.pptx
 | Narrative spine | <one line> |
 | Deck family and palette | <field / corporate / brand; primitives module> |
 | Current file | `<deck>.pptx`; archived `_v-1`, `_v-2` |
-| Review prefix | `<prefix>:` (default `REVIEW:`) |
+| Review prefix | `<prefix>:` (default `REVIEW:` or `Reviewer:`) |
 | Rebuild | `python3 build_deck.py && python3 <skill-dir>/scripts/check_layout.py <deck>.pptx && ...` |
 | Expected baseline | <N slides, N images, ~N MB> |
 
