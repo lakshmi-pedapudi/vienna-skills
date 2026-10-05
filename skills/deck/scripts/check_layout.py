@@ -1,6 +1,6 @@
 """Flag overlapping shapes and overfull text in the built deck.
 
-There is no PowerPoint renderer on this machine, so the deck cannot be looked at here.
+When no PowerPoint renderer is available, the deck cannot be looked at directly.
 This checks the two things that go wrong without a renderer to catch them: shapes whose
 declared boxes overlap, and text that will not fit the box it was given.
 
@@ -48,7 +48,7 @@ def est_height(sh):
     """Rough rendered height of a text frame, in inches.
 
     Characters per line comes from the average glyph width of Arial, about 0.5 em, and
-    line height from 1.22 times the point size, which is the line_spacing this deck sets.
+    line height from 1.22 times the point size, which is the line_spacing the primitives set.
     """
     if not sh.has_text_frame:
         return None

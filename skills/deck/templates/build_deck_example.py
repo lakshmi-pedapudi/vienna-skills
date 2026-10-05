@@ -3,11 +3,14 @@ build_deck.py and grow it. Every number comes from analysis/figures.csv via fig(
 
     python3 build_deck.py
 """
+import os
 import sys
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
-sys.path.insert(0, str(Path.home() / ".claude" / "skills" / "deck" / "scripts"))
+# <skill-dir>: set DECK_SKILL_DIR to wherever the deck skill is installed.
+SKILL_DIR = Path(os.environ.get("DECK_SKILL_DIR", "~/.claude/skills/deck")).expanduser()
+sys.path.insert(0, str(SKILL_DIR / "scripts"))
 from deck_primitives import *  # noqa: E402,F403
 
 OUT = HERE / "deck.pptx"
@@ -29,7 +32,7 @@ def build():
     builders = []
 
     builders.append(lambda n, t: cover(
-        prs, "Organisation  ·  Product",
+        prs, "<Organisation>  ·  <Product>",
         "<Deck Title as a Plain Noun Phrase>",
         "What the production data shows, what we have measured, and the direction we propose.",
         "Workshop pre-read  ·  <month year>"))

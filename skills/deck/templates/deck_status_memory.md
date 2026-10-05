@@ -5,7 +5,7 @@ metadata:
   type: project
 ---
 
-Deck "<Title>" for <audience>, <occasion and date>. Family: <methodology / board / ...>, palette <field / DG>. Rules file: `<path>/CLAUDE.md` (or `DECK_PLAN.md`). Session record: `<path>/SESSION.md`.
+Deck "<Title>" for <audience>, <occasion and date>. Family: <deck family>, palette <field / corporate / brand>. Rules file: `<path>/CLAUDE.md` (or `DECK_PLAN.md`). Session record: `<path>/SESSION.md`.
 
 **Why:** <first build date; which round the deck is in>.
 **How to apply:** read before touching the script or the deck. Records which version is current, what each review round added, and what is still open.
@@ -14,7 +14,7 @@ Deck "<Title>" for <audience>, <occasion and date>. Family: <methodology / board
 
 - Current: `<deck>.pptx` (N slides, N images). Archived: `<deck>_v-1.pptx` (<date>, reason).
 - Build: `build_deck.py`; charts `charts/gen_*.py`; registry `analysis/figures.csv`.
-- Review carrier: `<deck>_review.pptx` (`Reviewer:` boxes) or Google Slides link.
+- Review carrier: `<deck>_review.pptx` (`<prefix>:` boxes) or Google Slides link.
 - Frozen external copies (do not edit): <file or URL, date sent, recipient>.
 
 ## Rules Added per Round

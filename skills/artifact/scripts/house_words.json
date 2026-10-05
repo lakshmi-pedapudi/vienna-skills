@@ -1,0 +1,33 @@
+{
+  "_about": "House word lists for check_html.py. Edit freely, or point the gate at another file with --words. Patterns are case-insensitive Python regexes matched against visible page text. 'fail' entries are hard failures (exit 1); 'warn' entries are warnings.",
+  "fail": {
+    "banned word": [
+      "\\barms?\\b",
+      "\\binstruments?\\b",
+      "\\blicen[cs]e[sd]?\\b",
+      "\\bverdicts?\\b",
+      "\\baxes\\b",
+      "\\bunder the rule\\b"
+    ],
+    "jargon": [
+      "\\bblast radius\\b",
+      "\\bmitigation in flight\\b",
+      "\\bforce multiplier\\b",
+      "\\bfan-?out\\b",
+      "\\boperationali[sz]e\\w*"
+    ]
+  },
+  "warn": {
+    "self-reference": [
+      "\\bout of the room\\b",
+      "\\bdo not carry\\b",
+      "\\bclaims we are not repeating\\b"
+    ],
+    "internal id": [
+      "\\bAI-\\d+\\b",
+      "\\bT\\d[a-z]?\\b",
+      "\\b[A-E]\\d(?:\\.\\w+)?\\b",
+      "\\bchat_message\\w*"
+    ]
+  }
+}

@@ -1,0 +1,8 @@
+# Generic allow patterns for check_style.sh. One Perl regex per line; blank lines and lines
+# starting with '#' are ignored. Text matching any pattern is removed from a line before the
+# banned-word and phrase checks run.
+# Keep this file generic. Paper-specific literals (a file name or a proper noun that contains a
+# banned stem) go in a .paper-style-allow file in the paper folder, or on the command line via --allow.
+references\.bib
+\\cite[tp]?\{[^}]*\}
+\\bibitem\{[^}]*\}

@@ -1,24 +1,25 @@
 <title>Page Name</title>
+<!-- House default palette; replace the tokens with your brand values. -->
 <style>
   :root {
-    --bg:#F6F5EF; --bg-raised:#FFFFFF; --ink:#14170F; --ink-soft:#464B39; --ink-faint:#868D7D;
-    --line:#DCDACD; --accent:#A6472B; --accent-soft:#F4E3DB; --green:#3E6350; --green-soft:#E3EAE1;
-    --blue:#435C7A; --blue-soft:#E4E9F0; --amber:#B4791C; --amber-soft:#F7EDDB; --critical:#A8452F;
+    --bg:#F7F7F5; --bg-raised:#FFFFFF; --ink:#1A1C1E; --ink-soft:#4A4F55; --ink-faint:#646A71;
+    --line:#DDDFE1; --accent:#0F6E74; --accent-soft:#DDEFF0; --green:#2E6B4F; --green-soft:#E2EFE7;
+    --blue:#3A5F8F; --blue-soft:#E3EAF3; --amber:#8A5A00; --amber-soft:#F5EAD3; --critical:#B3261E;
     --sans:"IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
     --mono:"IBM Plex Mono", ui-monospace, Menlo, monospace;
     --serif:"Newsreader", "Source Serif 4", Georgia, serif;
   }
   @media (prefers-color-scheme: dark) {
     :root:not([data-theme="light"]) {
-      --bg:#14170F; --bg-raised:#1B1F18; --ink:#ECEEE8; --ink-soft:#B7BBA9; --ink-faint:#868D7D;
-      --line:#33372A; --accent:#DD8362; --accent-soft:#2E1D15; --green:#84B294; --green-soft:#1F2A21;
-      --blue:#93AECD; --blue-soft:#1E2733; --amber:#D8AE5F; --amber-soft:#33372A; --critical:#E0685A;
+      --bg:#121416; --bg-raised:#1C1F22; --ink:#ECEDEE; --ink-soft:#B9BEC4; --ink-faint:#8E949B;
+      --line:#2E3338; --accent:#5CC3C8; --accent-soft:#10302F; --green:#7DBF9C; --green-soft:#1C2D24;
+      --blue:#8FB0D9; --blue-soft:#1C2633; --amber:#E0B25C; --amber-soft:#33291A; --critical:#F2877E;
     }
   }
   :root[data-theme="dark"] {
-    --bg:#14170F; --bg-raised:#1B1F18; --ink:#ECEEE8; --ink-soft:#B7BBA9; --ink-faint:#868D7D;
-    --line:#33372A; --accent:#DD8362; --accent-soft:#2E1D15; --green:#84B294; --green-soft:#1F2A21;
-    --blue:#93AECD; --blue-soft:#1E2733; --amber:#D8AE5F; --amber-soft:#33372A; --critical:#E0685A;
+    --bg:#121416; --bg-raised:#1C1F22; --ink:#ECEDEE; --ink-soft:#B9BEC4; --ink-faint:#8E949B;
+    --line:#2E3338; --accent:#5CC3C8; --accent-soft:#10302F; --green:#7DBF9C; --green-soft:#1C2D24;
+    --blue:#8FB0D9; --blue-soft:#1C2633; --amber:#E0B25C; --amber-soft:#33291A; --critical:#F2877E;
   }
   body { background:var(--bg); color:var(--ink); font:15.5px/1.5 var(--sans); margin:0; padding-block:28px; padding-inline:16px; }
   main { max-width:1080px; margin:0 auto; }
@@ -73,9 +74,9 @@
 <main>
   <h1>Page Name</h1>
   <div class="status-card">
-    <span class="chip">Draft · 14 Sep 2026</span>
-    <span class="chip">1,163,658 photographs</span>
-    <span class="chip">4 countries</span>
+    <span class="chip">Draft · &lt;date&gt;</span>
+    <span class="chip">&lt;N records&gt;</span>
+    <span class="chip">&lt;K regions&gt;</span>
   </div>
 
   <section class="card" id="s1">

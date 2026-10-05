@@ -11,14 +11,15 @@ Read this file first in any session that touches `build_deck.py` or `<deck>.pptx
 | Presenter | <name, on behalf of> |
 | Slide budget | <N main + dividers + appendix> |
 | Narrative spine | <one line> |
-| Deck family and palette | <field / corporate example; primitives module> |
+| Deck family and palette | <field / corporate / brand; primitives module> |
 | Current file | `<deck>.pptx`; archived `_v-1`, `_v-2` |
-| Rebuild | `python3 build_deck.py && python3 ~/.claude/skills/deck/scripts/check_layout.py <deck>.pptx && ...` |
+| Review prefix | `<prefix>:` (default `REVIEW:`) |
+| Rebuild | `python3 build_deck.py && python3 <skill-dir>/scripts/check_layout.py <deck>.pptx && ...` |
 | Expected baseline | <N slides, N images, ~N MB> |
 
 ## 1. Hard Rules
 
-House rules from `~/.claude/skills/deck/references/style.md` apply. Project-specific rules below.
+House rules from `<skill-dir>/references/style.md` apply. Project-specific rules below.
 
 1.1 <rule, with the review comment that produced it>
 1.2 ...
@@ -60,5 +61,5 @@ Ordering reasons: <why each section precedes the next>.
 ## 6. Next Session
 
 1. Read this file end to end, then `SESSION.md`.
-2. If a new `<deck>_review.pptx` exists, extract `Reviewer:` comments, add rules, update script and deck together, log the mapping.
-3. Rebuild, run the three checkers, open the file, check the PDF.
+2. If a new `<deck>_review.pptx` exists, extract the `<prefix>:` comments, add rules, update script and deck together, log the mapping.
+3. Rebuild, run the gate scripts, open the file, check the PDF.

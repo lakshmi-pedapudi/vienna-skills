@@ -2,9 +2,9 @@
 
 Convergent review loop. Stop when two successive passes agree (no high, no regression, at most one minor new finding). Cap three passes.
 
-## Pass 1 (<date>, <reviewer: self / fresh subagent / Codex>)
+## Pass 1 (<date>, <reviewer: self / fresh subagent / another model>)
 
-the funder: <style gate: clean | N hits> · <figures or citations: pass | N unmatched> · <layout: N warnings>
+Gates: <style gate: clean | N hits> · <figures or citations: pass | N unmatched> · <layout: N warnings>
 
 | Id | Severity | Location | Finding | Fix applied |
 |---|---|---|---|---|
@@ -13,7 +13,7 @@ the funder: <style gate: clean | N hits> · <figures or citations: pass | N unma
 
 ## Pass 2 (<date>, <reviewer>)
 
-the funder: ...
+Gates: ...
 
 Regression check on pass 1 ids: P1-01 closed · P1-02 closed
 

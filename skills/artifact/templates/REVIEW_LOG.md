@@ -1,10 +1,10 @@
 # Review Log: <document>
 
-Convergent review loop. Stop when two successive passes agree (no high, no regression, at most one minor new finding). Cap three passes.
+Convergent review loop (`references/review.md`). Stop when two successive passes agree (no high, no regression, at most one minor new finding). Cap at three passes.
 
-## Pass 1 (<date>, <reviewer: self / fresh subagent / Codex>)
+## Pass 1 (<date>, <reviewer: self / fresh subagent / second model>)
 
-the funder: <style gate: clean | N hits> · <figures or citations: pass | N unmatched> · <layout: N warnings>
+Gate: <check_html.py: N failures, M warnings> · Render: <all sections render | issues> · Numbers: <all traced | N unresolved>
 
 | Id | Severity | Location | Finding | Fix applied |
 |---|---|---|---|---|
@@ -13,7 +13,7 @@ the funder: <style gate: clean | N hits> · <figures or citations: pass | N unma
 
 ## Pass 2 (<date>, <reviewer>)
 
-the funder: ...
+Gate: ...
 
 Regression check on pass 1 ids: P1-01 closed · P1-02 closed
 
@@ -27,6 +27,6 @@ New issues caused by pass 1 fixes: <none | ids>
 
 ...
 
-## Verdict
+## Outcome
 
 <Converged after pass N: passes N-1 and N agree.> or <Did not converge; unstable areas: ...; decision needed on ...>

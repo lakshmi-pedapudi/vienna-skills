@@ -1,6 +1,6 @@
 """Fail the build when a number reached a slide without passing through the registry.
 
-The deck builder already enforces one direction of the skeleton's first rule: it types no
+The deck builder already enforces one direction of the registry rule: it types no
 figures, it looks every one up in analysis/figures.csv by key, and an unknown key raises.
 That stops a typo. It does not stop the other direction, which is the one that actually
 ships wrong numbers:
@@ -12,10 +12,13 @@ ships wrong numbers:
 So this scans the built .pptx and reports every numeral in slide text that does not
 resolve to a registry row. It also reports the reverse: registry rows marked measured or
 quoted whose value appears on no slide. Those are either a slide that lost a number or a
-row that should be retired, and both are worth knowing before a workshop.
+row that should be retired, and both are worth knowing before hand-over.
 
     python3 check_figures.py --deck deck.pptx --registry analysis/figures.csv [--charts charts/] [--strict]
-                             [--exempt REGEX ...]
+                             [--exempt REGEX ...] [--exempt-file exempt.txt]
+
+--exempt adds one span pattern to mask (a project model name, a stage label such as M0);
+--exempt-file reads one pattern per line (blank lines and # comments ignored).
 
 Registry columns expected: key, slide, claim, value, row_set, source, status
 (status: measured | quoted | assumed | pending | blocked).
@@ -35,14 +38,14 @@ result: "3,000 to 18,000" is checked as 3000 and 18000, "15 of 20" as 15 and 20,
 registry on its own.
 
 row_set is included because the deck legitimately quotes denominators out of it ("of the
-384,271 rejected", "of the 16,292 test rows"). claim is included because it is registry-
-authored text too, and labels that exist only in the registry ("Top 22", "Top 30" on a
-coverage table) have no other home. That is the one deliberate relaxation here, so the report says how many
+<N> rejected", "of the <N> test rows"). claim is included because it is registry-authored
+text too, and labels that exist only in the registry ("Top 20", "Top 30" on a coverage
+table) have no other home. That is the one deliberate relaxation here, so the report says how many
 numerals leaned on it and nothing else.
 
 This is an existence check, not a semantics check. A slide could still quote a real
-registry number against the wrong claim, and 98.9% on slide 9 will match the four-country
-share on slide 3 because both are 98.9. Catching that needs a human; catching a number
+registry number against the wrong claim, and 98.9% on one slide will match an unrelated
+98.9% share on another. Catching that needs a human; catching a number
 with no registry row at all does not.
 """
 import argparse
@@ -69,9 +72,6 @@ EXEMPT = [
     (r"\bsections?\s+\d+(?:\s*(?:and|to|through|,|-|&)\s*\d+)*", "section reference"),
     # Work-plan references. "sub-task 2" names an owner, not a quantity.
     (r"\bsub-?tasks?\s+\d+(?:\s*(?:and|,|-)\s*\d+)*", "sub-task reference"),
-    # Checkpoint identifiers. M0, M1 and M2 are the names of the three pipeline stages,
-    # fixed in the skeleton so every slide can refer to them the same way.
-    (r"\bM[012]\b", "checkpoint identifier"),
     # Dates and years. "Aug 2024 to Jul 2026", "9 August", "August 2026", "31 Aug 2026".
     # The period covered is a registry row; the individual dates inside prose are not.
     (r"\b(?:19|20)\d{2}\b", "year"),
@@ -79,22 +79,15 @@ EXEMPT = [
     (rf"\b(?:{MONTHS})\s+\d{{1,2}}\b", "month and day"),
     # Model names carrying digits. Version numbers are identity, not measurement, and
     # "Sonnet 4.6" would otherwise report a 4.6 that can never have a registry row.
-    # Both the full name and the short form the callouts use: Qwen3-VL-235B-A22B, Qwen-235B.
-    # Generic: a model family name followed by a version or size token. Add project-specific
-    # names with --exempt on the command line rather than editing this list.
-    (r"Qwen\d?(?:[\s-]*VL)?(?:[\s-]*\d+B)?(?:-A\d+B)?", "model name"),
+    # A short generic list of common model families followed by a version or size token.
+    # Add project-specific names with --exempt or --exempt-file rather than editing this list.
     (r"(?:Sonnet|Opus|Haiku|Claude)[\s-]*\d(?:\.\d)?", "model name"),
+    (r"GPT-?[345](?:\.\d)?[a-z]?(?:[\s-]*mini)?\b", "model name"),
     (r"Gemini[\s-]*\d(?:\.\d)?(?:\s*(?:Flash|Pro))?", "model name"),
     (r"Gemma[\s-]*\d(?:-?e?\d+B)?", "model name"),
-    (r"Kimi[\s-]*K\d(?:\.\d)?", "model name"),
-    (r"MobileNetV\d(?:-small)?", "model name"),
-    (r"DaViT-(?:Small|Base|Tiny)", "model name"),
-    (r"GPT-?[45][a-z]?(?:[\s-]*mini)?\b", "model name"),
-    (r"Pixtral(?:\s+Large)?", "model name"),
-    (r"Llama[\s-]*\d+(?:\.\d+)?", "model name"),
-    (r"(?:Indic)?Whisper(?:[\s-]*(?:v\d|large|medium|small))?", "model name"),
-    (r"(?:Sarvam|Conformer|Canary|Parakeet|wav2vec|Deepgram)[\s-]*[\w.]*\d[\w.]*", "model name"),
-    (r"(?:EfficientNet|ConvNeXt)[\s-]*[\w.-]*\d[\w.-]*", "model name"),
+    (r"Llama[\s-]*\d+(?:\.\d+)?(?:[\s-]*\d+B)?", "model name"),
+    (r"Qwen[\d.]*(?:[\s-]*VL)?(?:[\s-]*\d+B)?(?:-A\d+B)?", "model name"),
+    (r"Whisper(?:[\s-]*(?:v\d|large(?:-v\d)?|medium|small))?", "model name"),
     # Slide furniture: the "3 / 8" page footer, "Slide 3 of 8", and the zero-padded labels
     # ("01", "02") the numbered-point block draws in front of each point.
     (r"\b\d{1,2}\s*/\s*\d{1,2}\b", "page footer"),
@@ -217,10 +210,16 @@ def main():
                     help="folder holding gen_*.py and their .dot outputs (default: <deck dir>/charts)")
     ap.add_argument("--exempt", action="append", default=[], metavar="REGEX",
                     help="extra span to mask before scanning (repeatable), e.g. a project model name")
+    ap.add_argument("--exempt-file", type=Path, default=None,
+                    help="file of extra span patterns, one regex per line (# comments allowed)")
     ap.add_argument("--strict", action="store_true",
                     help="also exit non-zero on registry rows no slide quotes")
     args = ap.parse_args()
-    for pat in args.exempt:
+    extra = list(args.exempt)
+    if args.exempt_file:
+        extra += [l.strip() for l in args.exempt_file.read_text().splitlines()
+                  if l.strip() and not l.lstrip().startswith("#")]
+    for pat in extra:
         EXEMPT.append((re.compile(pat, re.IGNORECASE), "command-line exempt"))
 
     rows = read_registry(args.registry)
@@ -258,7 +257,7 @@ def main():
     #
     # The .dot files in charts/ are build artifacts: charts/gen_*.py rewrite them from the
     # same CSVs the registry rows cite, so a number in one re-renders when the data
-    # changes. That is not a number "baked into an image" in the sense the skeleton
+    # changes. That is not a number "baked into an image" in the sense the registry rule
     # forbids, which is a figure nobody can update without redrawing. A hand-authored .dot
     # would be exactly that, so these are reported as their own category rather than
     # silently accepted, and only .dot files a generator writes are trusted.

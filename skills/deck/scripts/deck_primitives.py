@@ -1,18 +1,23 @@
-"""House python-pptx primitives for evidence-first slide decks.
+"""House python-pptx primitives for slide decks.
 
-Distilled from the methodology, audio, the funder and VLM workshop decks (Jul to Aug 2026) and the
-a board deck (Apr 2026). Import into a build script; never hand-edit the .pptx.
+Import into a build script; never hand-edit the .pptx. Point sys.path at this folder
+(<skill-dir>/scripts) with a real path; Python does not expand "~" on sys.path:
 
-    import sys; sys.path.insert(0, "~/.claude/skills/deck/scripts")
+    import sys
+    from pathlib import Path
+    sys.path.insert(0, str(Path("<skill-dir>/scripts").expanduser()))
     from deck_primitives import *
+
+SKILL_DIR below is the skill folder, resolved from this file's location.
 
 Layout: 16:9 (13.333 x 7.5 in), blank layout 6, every element placed by inch coordinates.
 Idiom: eyebrow over a plain-noun title, numbered points with a bold lead-in, tinted stat
 tiles, one takeaway line ruled off above the footnote, slide number in the corner, sources
 and expert detail in speaker notes.
 
-Palettes: PALETTE_FIELD (green + ochre, the Jul-Aug 2026 workshop family) is the default.
-PALETTE_CORPORATE (corporate #1CA069) is for board / board style decks. Call use_palette() once.
+Palettes: PALETTE_FIELD (green + ochre, technical and workshop decks) is the default.
+PALETTE_CORPORATE is an example corporate palette (navy + burnt orange) for board and
+leadership decks; replace its values with your brand. Call use_palette() once.
 
 Numbers: load a figures registry with load_registry() and fetch every figure through
 fig("key"). Unknown key raises. pending / blocked rows render as a visible pending block.
@@ -28,6 +33,7 @@ from pptx.enum.shapes import MSO_SHAPE
 from pptx.enum.text import MSO_ANCHOR, PP_ALIGN
 from pptx.util import Emu, Inches, Pt
 
+SKILL_DIR = Path(__file__).resolve().parent.parent   # <skill-dir>, wherever it is installed
 
 def rgb(h: str) -> RGBColor:
     return RGBColor.from_string(h.lstrip("#").upper())
@@ -39,12 +45,12 @@ PALETTE_FIELD = dict(   # technical and workshop deck family
     INK="#15180F", MUTED="#585D4E", TINT="#F3F5EC", RULE="#D8DDC8",
     WHITE="#FFFFFF", PALE="#C7D9B4", WARN="#9C3B2E", FONT="Arial",
 )
-PALETTE_CORPORATE = dict(      # example corporate palette; replace with your brand
-    ACCENT="#1CA069",   # brand green
-    ACCENT2="#4EBB95",  # brand secondary
-    INK="#313131", MUTED="#8A8A8A", TINT="#F8F9FA", RULE="#E5E7EB",
-    WHITE="#FFFFFF", PALE="#C8EAD7", WARN="#E07A2B", FONT="Calibri",
-    CHARCOAL="#32373C",
+PALETTE_CORPORATE = dict(   # example corporate palette; replace with your brand
+    ACCENT="#1F4E79",   # navy: hero numbers, table headers, dividers (white text 8.6:1)
+    ACCENT2="#B4510F",  # burnt orange: eyebrow, numerals, vendor/external (white text 5.1:1)
+    INK="#1A1A1A", MUTED="#5F6368", TINT="#F4F6F8", RULE="#D9DDE3",
+    WHITE="#FFFFFF", PALE="#C9D6E8", WARN="#A4262C", FONT="Calibri",
+    CHARCOAL="#2E3338",
 )
 
 P = {}   # active palette, filled by use_palette()

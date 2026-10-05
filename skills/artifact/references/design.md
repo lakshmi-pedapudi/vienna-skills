@@ -1,38 +1,38 @@
-# Design: Anatomy, Palette, Theme, Charts, Layout
+# Design
 
-Load the `artifact-design` skill before writing HTML and `artifact-diagramming` before any flowchart. This file records the house choices on top of those.
+Applies to: the page's anatomy, palette, typography, theme, charts and layout. Load the `artifact-design` skill before writing HTML and `artifact-diagramming` before any flowchart; this file records the house choices on top of those.
 
 ## Page Anatomy
 
 - `<title>` in the first 8 KB: a short distinctive name, not a summary.
-- Status card or chip row at the top: draft date, headline scale facts ("1,163,658 photographs", "4 countries"), submission or meeting plan when agreed.
-- Section card: section number, formal heading, status pill (`sourced` / `outlined` / `pending`, or `done` / `partial` / `proposed`), source chips naming the file or document behind the section, then the content (table, tiles, inline SVG figure with caption, numbered points), then a dashed pending box for anything provisional.
+- Status card or chip row at the top: draft date, headline scale facts ("<N> records", "<K> regions"), submission or meeting plan when agreed.
+- Section card: section number, formal heading, status pill (`sourced` / `outlined` / `pending`), source chips naming the file or document behind the section (internal pages only), then the content (table, tiles, inline SVG figure with caption, numbered points), then a dashed pending box for anything provisional.
 - Stat tiles: three or four across, number in the accent, label in muted ink with the denominator. One hero number per section, only for good news.
 - Callouts: tinted surface, accent bar on the left, one or two sentences.
 - Figure: `<figure>` with `<figcaption>`, heading outside the figure box.
 - Pre-read variant: paginated `page` blocks with a page head and a footer line, so the page prints as slides.
-- Paper variant: see `/paper` (status pills per section, Appendix A materials, Appendix B reconciliation).
+- Paper variant: see the paper skill, if installed (status pills per section, Appendix A materials, Appendix B reconciliation).
 
 ## Palette
 
-One cream ground, olive-black ink, a rust accent, a green, a slate blue, an amber. Values drift a little per page; the roles never do.
+House default; replace with your brand tokens. Keep the roles when you swap the values. Every text colour below reaches at least 4.5:1 contrast on both `--bg` and `--bg-raised` in its theme, and each pill colour reaches 4.5:1 on its own tint.
 
 | Token | Role | Light | Dark |
 |---|---|---|---|
-| `--bg` | page ground | `#F6F5EF` | `#14170F` |
-| `--bg-raised` | cards, tables | `#FFFFFF` | `#1B1F18` |
-| `--ink` | text | `#14170F` | `#ECEEE8` |
-| `--ink-soft` | secondary text | `#464B39` | `#B7BBA9` |
-| `--ink-faint` | captions, chips | `#868D7D` | `#868D7D` |
-| `--line` | hairlines | `#DCDACD` | `#33372A` |
-| `--accent` | flags, emphasis, pending | `#A6472B` rust | `#DD8362` |
-| `--green` | route B, good, image modality | `#3E6350` | `#84B294` |
-| `--blue` | route A, slate | `#435C7A` | `#93AECD` |
-| `--amber` | warning, paid calls, open | `#B4791C` | `#D8AE5F` |
-| `--critical` | failures | `#A8452F` | `#E0685A` |
-| soft tints | pill and chip backgrounds | `#F4E3DB` `#E3EAE1` `#E4E9F0` `#F7EDDB` | darker mixes |
+| `--bg` | page background | `#F7F7F5` | `#121416` |
+| `--bg-raised` | cards, tables | `#FFFFFF` | `#1C1F22` |
+| `--ink` | text | `#1A1C1E` | `#ECEDEE` |
+| `--ink-soft` | secondary text | `#4A4F55` | `#B9BEC4` |
+| `--ink-faint` | captions, chips | `#646A71` | `#8E949B` |
+| `--line` | hairlines | `#DDDFE1` | `#2E3338` |
+| `--accent` | emphasis, numbered points | `#0F6E74` | `#5CC3C8` |
+| `--green` | positive, sourced, series 1 | `#2E6B4F` | `#7DBF9C` |
+| `--blue` | neutral, outlined, series 2 | `#3A5F8F` | `#8FB0D9` |
+| `--amber` | warning, flagged, pending | `#8A5A00` | `#E0B25C` |
+| `--critical` | failures | `#B3261E` | `#F2877E` |
+| soft tints | pill and chip backgrounds (accent, green, blue, amber) | `#DDEFF0` `#E2EFE7` `#E3EAF3` `#F5EAD3` | `#10302F` `#1C2D24` `#1C2633` `#33291A` |
 
-Where a page compares channels, the modality tokens on charts are green for image or photo, grey for text, near-black grey for voice; a page without that split uses the accent and neutrals. Category palettes must survive greyscale: hatch, direct labels, or position, never hue alone (the multi-hue set failed colour-vision checks). Amber consistently means "paid call" or "flagged" within one page; say so in the caption once.
+When a category recurs across charts (a channel, a segment, a model family), fix one colour per category for the whole page and state the mapping once. Series colours share similar lightness, so category encodings must survive greyscale: direct labels, hatching or position, never hue alone. *Why: multi-hue sets often fail colour-vision checks and greyscale printing.* Amber means "flagged" consistently within one page; say so in the caption once.
 
 ## Typography
 
@@ -41,44 +41,44 @@ IBM Plex Sans for body and UI, IBM Plex Mono for numerals in tables (`font-varia
 ## Theme CSS
 
 ```css
-:root { --bg:#F6F5EF; --bg-raised:#FFFFFF; --ink:#14170F; --ink-soft:#464B39; --ink-faint:#868D7D;
-        --line:#DCDACD; --accent:#A6472B; --green:#3E6350; --blue:#435C7A; --amber:#B4791C; --critical:#A8452F; }
+:root { --bg:#F7F7F5; --bg-raised:#FFFFFF; --ink:#1A1C1E; --ink-soft:#4A4F55; --ink-faint:#646A71;
+        --line:#DDDFE1; --accent:#0F6E74; --green:#2E6B4F; --blue:#3A5F8F; --amber:#8A5A00; --critical:#B3261E; }
 @media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) { --bg:#14170F; --bg-raised:#1B1F18; --ink:#ECEEE8; --ink-soft:#B7BBA9;
-        --line:#33372A; --accent:#DD8362; --green:#84B294; --blue:#93AECD; --amber:#D8AE5F; --critical:#E0685A; }
+  :root:not([data-theme="light"]) { --bg:#121416; --bg-raised:#1C1F22; --ink:#ECEDEE; --ink-soft:#B9BEC4; --ink-faint:#8E949B;
+        --line:#2E3338; --accent:#5CC3C8; --green:#7DBF9C; --blue:#8FB0D9; --amber:#E0B25C; --critical:#F2877E; }
 }
 :root[data-theme="dark"] { /* same values as the dark block */ }
 body { background: var(--bg); color: var(--ink); margin: 0; padding-block: 24px; padding-inline: 16px; }
 ```
 
-Never give a colour its only definition inside a media or `[data-theme]` block. Design both themes deliberately; The Gate and the Gap used light mode as a light table and dark mode as a darkroom.
+Never give a colour its only definition inside a media or `[data-theme]` block. Design both themes deliberately rather than inverting one; for example, an image-heavy page can treat light mode as a light table and dark mode as a darkroom.
 
 ## Charts
 
-- Hand-authored inline `<svg>` for flowcharts and simple charts: `viewBox` sizing, `currentColor` strokes, marker arrowheads, labelled arrows, no `<style>` or `<script>` inside the SVG. Or matplotlib PNGs embedded as `data:image` URIs, generated by a script that reads the CSV the numbers come from.
-- No chart library (no Chart.js, D3, Plotly, Recharts). Never Mermaid. Diagrams are Graphviz DOT rendered to SVG, or inline SVG.
+- Hand-authored inline `<svg>` for flowcharts and simple charts: `viewBox` sizing, `currentColor` strokes, marker arrowheads, labelled arrows, no `<style>` or `<script>` inside the SVG. Or matplotlib PNGs embedded as `data:image` URIs, generated by a script that reads the extract the numbers come from. Graphviz DOT rendered to SVG is acceptable for larger diagrams.
+- No chart library (no Chart.js, D3, Plotly, Recharts). Never Mermaid. *Why: the artifact's Content Security Policy blocks them, and a raster or library chart cannot be checked against the source.*
 - Bars are proportional to values. A static bar with the number written beside it is a defect.
 - Labels sit next to the marks they encode. Remove legends that obstruct or add nothing.
 - Stacked or grouped bars add up the way a reader expects, or the chart is restructured.
-- Show the full distribution with reference markers (Top 20, 30, 40) rather than truncating.
+- Show the full distribution with reference markers (for example top-N cumulative markers) rather than truncating.
 - Open with a short flowchart of the real mechanism (four or five boxes) instead of an explanatory paragraph. Diagrams carry structure and no measurements. Once a subsystem is drawn in detail, later diagrams collapse it to one box.
 - Encode a distinction in the chart so an explanatory subsection can be deleted.
-- Chart dimensions are tuned with explicit percentages; side by side beats stacked.
+- Tune chart dimensions with explicit percentages; side by side beats stacked.
 - Export every chart as SVG and PNG into the project folder alongside the page.
 - Latency or waterfall charts use block widths tied to measured values.
 
 ## Layout
 
-- Grids of small multiples for per-slice breakdowns (one row of per-country, per-class or per-language charts).
+- Grids of small multiples for per-slice breakdowns (one row of per-segment charts).
 - Fixed-height scrollable boxes for long content (model replies, transcripts, long example text). Collapsible rows with category filter chips and a flag toggle for example galleries of fifty or more.
 - Side gutter 16 px or more at every width; holds at 400 px; tables scroll inside their own `overflow-x: auto` wrapper; the page never scrolls horizontally.
-- Rows of tiles keep their row in print. Use `display:flex; flex-wrap:nowrap` with `print-color-adjust: exact` and test the PDF: "the pdf version converts the flowchart of 4 tiles in one row into four separate rows."
+- Rows of tiles keep their row in print. Use `display:flex; flex-wrap:nowrap` with `print-color-adjust: exact` and test the PDF. *Why: browser print otherwise wraps a row of four tiles into four stacked rows.*
 - Resize boxes to match the weight of their content; merge related tiles; images on page one are not oversized.
-- Give the key message deliberate visual prominence when the point must land ("Human review part needs to be a little more prominent both in style and font").
+- Give the key message deliberate visual prominence when the point must land, in both style and type size. *Why: a step that is only written, not shown, is missed by readers who scan.*
 
 ## File Shape
 
-The Artifact tool wraps the file in its own doctype, head and body, so a page meant for publishing starts with `<title>` and `<style>`, no `<html>` or `<head>` of its own. A page that will be opened as a local file or converted to PDF gets a full document wrapper (doctype, charset, viewport); strip it before publishing. Fonts: name the house faces first with a full system fallback stack; Google Fonts stylesheets are allowed on published pages but a local file must read identically without them.
+The Artifact tool wraps the file in its own doctype, head and body, so a page meant for publishing starts with `<title>` and `<style>`, with no `<html>` or `<head>` of its own. A page that will be opened as a local file or converted to PDF gets a full document wrapper (doctype, charset, viewport); strip it before publishing. Fonts: name the house faces first with a full system fallback stack; Google Fonts stylesheets are allowed on published pages, but a local file must read identically without them.
 
 ## Templates
 

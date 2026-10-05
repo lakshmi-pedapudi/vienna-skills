@@ -28,7 +28,7 @@ cd <deck folder>
 python3 charts/gen_charts.py
 for f in <diagram names>; do dot -Tsvg $f.dot -o charts/$f.svg; dot -Tpng -Gdpi=170 $f.dot -o charts/$f.png; done
 python3 build_deck.py
-S=~/.claude/skills/deck/scripts
+S=<skill-dir>/scripts
 python3 $S/check_layout.py <deck>.pptx && python3 $S/check_figures.py --deck <deck>.pptx --registry analysis/figures.csv && python3 $S/check_words.py <deck>.pptx --names names.txt
 python3 $S/preview_slides.py <deck>.pptx      # read preview/slide_N.png
 ```

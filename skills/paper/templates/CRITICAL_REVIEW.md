@@ -49,6 +49,10 @@ See `citation_verification.csv` (Citation Key, Title, First Author, Year, Venue,
 | P2 | | | |
 | P3 | | | |
 
-## VI. Questions for the Author
+## VI. Reconciliation Register (internal; never in the paper)
+
+One bold lead-in per unresolved item: superseded numbers ("must not be reused"), files not located, confounds pending a re-run, denominator mismatches, pilot sample sizes, provisional author order with its deadline. See `references/structure.md`, Reconciliation Register.
+
+## VII. Questions for the Author
 
 Numbered. One concrete question per skipped item, each with a recommended answer.

@@ -6,11 +6,11 @@ Three [Claude Code](https://claude.com/claude-code) skills for producing researc
 
 | Skill | Command | What it does |
 |-------|---------|--------------|
-| [paper](docs/skills/paper.md) | `/paper` | Use when writing, reviewing, or revising a research paper, arXiv preprint, whitepaper, or the reviewer-facing HTML artifact that precedes one, for a research or product team. |
-| [deck](docs/skills/deck.md) | `/deck` | Use when building, revising, reviewing, or converting a slide deck or presentation for a research or product team: board or leadership decks, funder or workshop decks, partner pre-reads, CEO talks, methodology decks, tech updates, Google Slides or PDF exports. |
-| [artifact](docs/skills/artifact.md) | `/artifact` | Use when building, revising, reviewing, publishing, or exporting a Claude artifact (a published HTML page) for a research or product team: pre-reads for funders or partners, analysis reports and dashboards, methodology articles, reviewer-facing paper drafts, design documents, findings pages with charts and example tables. |
+| [paper](docs/skills/paper.md) | `/paper` | Use when writing, reviewing, or revising a research paper, arXiv preprint, whitepaper, or the reviewer-facing HTML artifact that precedes one. |
+| [deck](docs/skills/deck.md) | `/deck` | Use when building, revising, reviewing, or converting a slide deck or presentation: board or leadership decks, funder, partner or customer decks, workshop decks, pre-reads, executive talks, methodology decks, tech updates, Google Slides or PDF exports. |
+| [artifact](docs/skills/artifact.md) | `/artifact` | Use when building, revising, reviewing, publishing, or exporting a Claude artifact (a published HTML page): pre-reads for external stakeholders, analysis reports and dashboards, methodology articles, reviewer-facing paper drafts, design documents, findings pages with charts and example tables. |
 
-Each skill is a folder with `SKILL.md` (trigger, phase table, non-negotiables, red flags), `references/` (workflow, style, review, dated lessons), `templates/` and `scripts/` (gates that exit non-zero). Claude Code loads the skill when the task matches the description or when you type the slash command.
+Each skill is a folder with `SKILL.md` (overview, inputs, outputs, workflow, quality standards, limitations, troubleshooting), `references/` (workflow, style, review, pitfalls and topic guides), `templates/` and `scripts/` (gates that exit non-zero, with house word lists in editable config files). Claude Code loads the skill when the task matches the description or when you type the slash command.
 
 ## Three Rules Shared by All Three
 
@@ -50,14 +50,24 @@ Or as a Claude Code plugin:
 /plugin install vienna-skills@vienna-skills
 ```
 
-Skills are symlinked, so `npm update -g vienna-skills` or `git pull` refreshes them in place. Prerequisites for the scripts: `python3` with `python-pptx`, `matplotlib`, `pillow` (deck), Graphviz `dot` (deck and paper figures), `perl` (paper style gate). Paths inside the references assume `~/.claude/skills/<name>`; adjust for other runtimes.
+Skills are symlinked, so `npm update -g vienna-skills` or `git pull` refreshes them in place. Prerequisites for the scripts: `python3` with `python-pptx`, `matplotlib`, `pillow` (deck), Graphviz `dot` (deck and paper figures), `perl` (paper style gate). References write script paths as `<skill-dir>`, wherever the skill is installed. Deck build scripts read it from `DECK_SKILL_DIR` (default `~/.claude/skills/deck`).
 
 ## Adaptation
 
 - Palettes and typography are constants at the top of `skills/deck/scripts/deck_primitives.py` and in `skills/artifact/templates/page_skeleton.html`. Replace the corporate example with your brand once; everything downstream reads it.
-- Banned-word lists live in `skills/paper/scripts/check_style.sh`, `skills/deck/scripts/check_words.py` and `skills/artifact/scripts/check_html.py`. Edit them to your house style.
-- The review-comment prefix (`Reviewer:`) and the figures-registry columns are documented in each skill's `references/review.md` and `references/build.md`.
-- `references/lessons.md` in each skill is a dated record of the corrections that produced the rules. Keep appending your own; the rules stay honest when the reasons stay attached.
+- House word lists are config files, not code: `skills/paper/scripts/banned_words.txt` and `allow.txt`, `skills/deck/scripts/house_words.json`, `skills/artifact/scripts/house_words.json`. Edit them to your house style, or point a gate at another file with `--words`. Built-in checks (em-dashes, AI-tell and hype phrases, sentence-shape warnings) stay in the scripts.
+- The review-comment prefix defaults to `REVIEW:`; pass `--prefix` (repeatable) to `extract_review_comments.py` for your own. The figures-registry columns are documented in `skills/deck/references/build.md`.
+- `references/pitfalls.md` in each skill lists the rationalisations and failure modes that the rules exist to stop, each pointing to the file that holds its rule. Add your own as rules in the relevant reference file, with a one-line reason.
+
+## Changes in 1.1.0
+
+- Every `SKILL.md` follows one layout: Overview, When to Use, Inputs, Outputs, Workflow, Quality Standards (with a gate-script table), Reference Guides, Limitations, Troubleshooting.
+- `references/lessons.md` is replaced by `references/pitfalls.md`. The dated corrections are condensed into rules with reasons inside the reference files.
+- New "Sentence Shapes" rules in all three style guides ("not A, but B" pivots, padded lists, stacked adjectives, taglines, recap endings, narrated structure). Paper and artifact gates warn on them; all gates fail on hype phrases.
+- House word lists moved to config files. New options: `--allow` and a per-paper `.paper-style-allow` (paper), `--words`, `--codes`, `--external` (deck words), `--exempt-file` (deck figures, paper numbers), `--words` and `--id-pattern` (artifact).
+- Deck: the review-comment prefix default is `REVIEW:`; build scripts locate the skill through `DECK_SKILL_DIR`.
+- Paper: the number-placement gate reports correct line numbers after tables and maths.
+- Artifact: paragraph and section thresholds match the style rules; the script CDN allowlist is cdnjs and jsdelivr/npm only.
 
 ## Related
 

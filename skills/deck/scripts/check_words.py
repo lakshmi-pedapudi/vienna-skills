@@ -1,30 +1,62 @@
-"""Word gate for a built deck: em-dashes, AI-tell phrases, board-deck jargon, banned slide
-words, internal section codes, and personal names (from an optional names file).
+"""Word gate for a built deck: em-dashes, AI-tell and hype phrases, title shape, the house
+word lists (jargon, banned slide words, invented metric words, internal codes) and personal
+names from an optional names file.
 
 Scans slide text, table cells and speaker notes. Exit 1 on any hit.
 
-    python3 check_words.py deck.pptx [--names names.txt] [--allow REGEX ...] [--no-notes]
+    python3 check_words.py deck.pptx [--words house_words.json] [--codes REGEX ...]
+                           [--names names.txt] [--allow REGEX ...] [--no-notes] [--external]
 
-names.txt: one name per line (team members who must not appear on a slide face). The
-presenter's name on the cover is the usual --allow.
+Built in (always on): em-dash, AI-tell phrases, hype phrases, title checks.
+--words FILE  JSON word lists, default house_words.json beside this script. Keys: jargon,
+              banned, invented, codes (lists of regexes) and title_max_words (int).
+--codes REGEX extra internal-code pattern, added to the config's codes (repeatable).
+--external    the deck leaves the organisation: speaker notes are scanned for codes too.
+              Without it, codes are allowed in notes as pointers to working documents.
+--names FILE  one personal name per line; any match is a hit. The presenter's name on the
+              cover is the usual --allow.
 """
 import argparse
+import json
 import re
 import sys
+from pathlib import Path
+
 from pptx import Presentation
 from pptx.enum.shapes import MSO_SHAPE_TYPE
 
-RULES = [
+HERE = Path(__file__).resolve().parent
+DEFAULT_WORDS = HERE / "house_words.json"
+
+BUILTIN = [
     ("em-dash", r"—|&mdash;|&#8212;"),
     ("AI tell", r"\b(?:dive into|delve|leverag\w*|robust|seamless\w*|unlock\w*|genuinely|paramount|"
                 r"it is worth noting|in today.s|underscor\w* the need|sweet spot|comprehensive)\b"),
-    ("jargon", r"\b(?:blast radius|mitigation in flight|force multiplier|fan-?out|cohort|"
-               r"surface area|operationali[sz]e\w*|headline)\b"),
-    ("banned slide word", r"\bTheme\s*\d*\b|\bWhy (?:it|this) matters\b|\bWhat this means\b|"
-                          r"\bRisk surface\b|\bV2 product pivot\b|\bCross-link:"),
-    ("section code", r"\b(?:[A-E]\d(?:\.\w+)?|F\d\.\w+|T\d\.\d|D\.3\.\w+)\b"),
-    ("invented metric word", r"\b(?:under the rule|verdict|admission|axes)\b"),
+    ("hype phrase", r"\b(?:game.?changer\w*|cutting.edge|revolutionary|transformati(?:ve|onal)|supercharg\w*|"
+                    r"needless to say|it(?:.s| is) no secret|at the end of the day|that being said|let.s look at|"
+                    r"(?:it is|it.s) crucial to|arguably one of the most)\b"),
 ]
+
+CONFIG_KINDS = [("jargon", "jargon"), ("banned", "banned slide word"),
+                ("invented", "invented metric word")]
+
+
+def words_rx(patterns, flags=re.IGNORECASE):
+    """One regex for a list of alternatives, anchored as whole words. (?!\\w) rather than
+    \\b at the end so entries ending in punctuation ("Cross-link:") still match."""
+    return re.compile(r"\b(?:" + "|".join(patterns) + r")(?!\w)", flags | re.MULTILINE)
+
+
+def load_rules(words_file, extra_codes):
+    cfg = json.loads(Path(words_file).read_text()) if words_file else {}
+    rules = [(k, re.compile(p, re.IGNORECASE | re.MULTILINE)) for k, p in BUILTIN]
+    for key, kind in CONFIG_KINDS:
+        if cfg.get(key):
+            rules.append((kind, words_rx(cfg[key])))
+    codes = list(cfg.get("codes") or []) + list(extra_codes)
+    if codes:
+        rules.append(("section code", words_rx(codes, flags=0)))
+    return rules, int(cfg.get("title_max_words", 4))
 
 
 def title_of(slide):
@@ -40,13 +72,13 @@ def title_of(slide):
     return paras[-1] if paras else ""   # eyebrow sits above the title in the same box
 
 
-def title_problems(title):
+def title_problems(title, max_words):
     words = title.split()
-    if len(words) > 4:
-        yield f"title has {len(words)} words (1 to 4 plain nouns expected)"
+    if len(words) > max_words:
+        yield f"title has {len(words)} words (1 to {max_words} plain nouns expected)"
     if title.endswith((".", "?", "!")):
         yield "title ends with sentence punctuation"
-    if re.match(r"(?i)^(?:what|how|why|when|where|two ways|the )", title):
+    if re.match(r"(?i)^(?:what|how|why|when|where|the )", title):
         yield "title reads as a sentence or narrative label"
     if re.search(r"\b(?:not|vs\.?|versus)\b", title, re.I):
         yield "'X not Y' or versus construction in a title"
@@ -77,12 +109,18 @@ def texts(prs, with_notes):
 def main():
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     ap.add_argument("deck")
+    ap.add_argument("--words", default=str(DEFAULT_WORDS),
+                    help="JSON word lists (default: house_words.json beside this script)")
+    ap.add_argument("--codes", action="append", default=[], metavar="REGEX",
+                    help="extra internal-code pattern, added to the config's codes")
     ap.add_argument("--names", help="file with one personal name per line")
     ap.add_argument("--allow", action="append", default=[], metavar="REGEX")
     ap.add_argument("--no-notes", action="store_true", help="skip speaker notes")
+    ap.add_argument("--external", action="store_true",
+                    help="external deck: also flag section codes in speaker notes")
     a = ap.parse_args()
 
-    rules = [(k, re.compile(p, re.IGNORECASE | re.MULTILINE)) for k, p in RULES]
+    rules, max_words = load_rules(a.words, a.codes)
     if a.names:
         names = [l.strip() for l in open(a.names) if l.strip()]
         if names:
@@ -93,13 +131,13 @@ def main():
     prs = Presentation(a.deck)
     for n, slide in enumerate(prs.slides, 1):
         t = title_of(slide)
-        for prob in title_problems(t):
+        for prob in title_problems(t, max_words):
             hits += 1
             print(f"slide {n} (title) [{prob}]: {t[:90]!r}")
     for n, where, t in texts(prs, not a.no_notes):
         for kind, rx in rules:
-            if kind == "section code" and where == "notes":
-                continue  # codes are allowed in notes as pointers to working docs
+            if kind == "section code" and where == "notes" and not a.external:
+                continue  # internal decks: codes in notes point to working documents
             for m in rx.finditer(t):
                 frag = " ".join(t[max(0, m.start() - 40):m.end() + 40].split())
                 if any(ax.search(frag) for ax in allow):

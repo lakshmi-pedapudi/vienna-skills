@@ -2,7 +2,7 @@
 title: <Topic title>
 slug: <topic_slug>
 status: collecting        # collecting | saturated | saturated_partial | in_deck | parked
-tags: []                  # text, voice, image, language, cost, latency, <initiative>
+tags: []                  # <data type>, cost, latency, <initiative>
 sources: []
 created: YYYY-MM-DD
 ---

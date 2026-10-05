@@ -1,6 +1,6 @@
 # Paper Materials: <Paper Title>
 
-Evidence gathered for the paper, organized by paper section or theme, not by source repository. Every aggregate in the paper should be re-derivable from a file listed here.
+Evidence gathered for the paper, organised by paper section or theme, not by source repository. Every aggregate in the paper should be re-derivable from a file listed here.
 
 ## Folder Map
 
@@ -11,7 +11,7 @@ Evidence gathered for the paper, organized by paper section or theme, not by sou
 | `03_<module>_M0/` | candidate comparison CSV, experiment report | 5 |
 | `NN_<gap>/` | `GAP_NOTE.md` with status in the heading | as noted |
 
-Corrections and supersessions go inline in bold in this table, for example: **the 13 Aug headline table (a / b / c / d) is superseded by the 16 Aug audit; never reuse.**
+Corrections and supersessions go inline in bold in this table, for example: **the <date> headline table (a / b / c / d) is superseded by the <date> audit; never reuse.**
 
 ## Excluded
 
@@ -23,4 +23,4 @@ One line per gap the author flagged, with its `GAP_NOTE.md` and its status (reso
 
 ## Style Reference
 
-The two published papers: arXiv:2602.03868 (ASR benchmark), arXiv:2603.03294 (SFT and DG-Eval). House rules in `~/.claude/skills/paper/references/style.md`.
+Reference papers, if any: see the paper's status memory. House rules: `<skill-dir>/references/style.md`.

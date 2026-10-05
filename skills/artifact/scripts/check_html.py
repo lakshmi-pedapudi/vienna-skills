@@ -1,59 +1,100 @@
 """Gate for a Claude artifact HTML file before publishing.
 
-Hard failures (exit 1): em-dashes, banned words, AI tells, jargon, personal names (from a
-names file), external chart libraries, Mermaid, a missing <title>, a script src outside
-the artifact CDN allowlist.
+Hard failures (exit 1): em-dashes, AI tells, hype phrases, house banned words and jargon
+(from the word config), personal names (from a names file), external chart libraries,
+Mermaid, a missing <title>, a script src outside the artifact CDN allowlist.
 
-Warnings (exit 0): paragraphs over 100 words or 4 sentences, more than 8 top-level
-sections, headings that read as sentences or "X not Y", self-referential or process
-phrases, caveat or footnote blocks, changelog sections, internal ids and file paths, a
-theme that is not three-state, images whose src is neither data: nor an existing file,
-a body without an explicit background.
+Warnings (exit 0): paragraphs over 100 words or 3 sentences, more than 7 top-level
+sections, headings that read as sentences or "X not Y", "not A, but B" pivots in body
+text, recap endings, narrated structure, self-referential or process phrases, caveat or
+footnote blocks, changelog sections, internal ids and file names, a theme that is not
+three-state, images whose src is neither data: nor an existing file, a body without an
+explicit background.
 
-    python3 check_html.py page.html [--names names.txt] [--allow REGEX ...] [--strict]
+    python3 check_html.py page.html [--names names.txt] [--words house_words.json]
+                          [--id-pattern REGEX ...] [--allow REGEX ...] [--strict]
 
+--words defaults to house_words.json next to this script; --words none skips it.
 --strict turns warnings into failures.
 """
 import argparse
 import html as htmlmod
+import json
 import os
 import re
 import sys
 
+HERE = os.path.dirname(os.path.abspath(__file__))
+DEFAULT_WORDS = os.path.join(HERE, "house_words.json")
+
+# Built-in hard failures. House-specific lists live in the word config.
 HARD = [
     ("em-dash", r"—|&mdash;|&#8212;"),
-    ("banned word", r"\b(?:arms?|instruments?|licen[cs]e[sd]?|verdicts?|axes|under the rule)\b(?![^<]*</code>)"),
     ("AI tell", r"\b(?:dive into|delve|leverag\w*|robust|seamless\w*|unlock\w*|genuinely|paramount|"
                 r"it is worth noting|in today.s|underscor\w* the need|sweet spot)\b"),
-    ("jargon", r"\b(?:blast radius|mitigation in flight|force multiplier|fan-?out|operationali[sz]e\w*)\b"),
+    ("hype phrase", r"\b(?:game.?changer\w*|cutting.edge|revolutionary|transformati(?:ve|onal)|supercharg\w*|"
+                    r"needless to say|it(?:.s| is) no secret|at the end of the day|that being said|let.s look at|"
+                    r"(?:it is|it.s) crucial to|arguably one of the most)\b"),
     ("chart library", r"(?:chart\.js|chartjs|/d3(?:\.min)?\.js|d3js\.org|plotly|recharts|echarts|highcharts|apexcharts|vega)"),
     ("mermaid", r"mermaid"),
 ]
-CDN_OK = r"^https://(?:cdnjs\.cloudflare\.com|cdn\.jsdelivr\.net/npm/|cdn\.tailwindcss\.com|code\.jquery\.com)"
+RAW_SOURCE_KINDS = ("chart library", "mermaid", "em-dash")
+
+# Script hosts the Artifact runtime allows.
+CDN_OK = r"^https://(?:cdnjs\.cloudflare\.com/|cdn\.jsdelivr\.net/npm/)"
+
+# Neutral internal-id defaults: tracker keys (ABC-123) and file names.
+DEFAULT_ID_PATTERNS = [r"\b[A-Z][A-Z0-9]{1,9}-\d+\b", r"\b\w+\.(?i:csv|py|json|md|ipynb|sql|xlsx)\b"]
 
 WARN = [
     ("self-reference", r"\b(?:this (?:document|artifact|page|pre-read|deck)|as discussed|earlier discussion|"
-                       r"we (?:have )?not yet|not yet (?:solid|verified)|do not carry|out of the room|"
-                       r"claims we are not repeating|changes in this version|changelog|what changed)\b"),
+                       r"we (?:have )?not yet|not yet (?:solid|verified)|changes in this version|changelog|what changed)\b"),
     ("caveat block", r"\b(?:caveats?|disclaimer|footnotes?|methodolog\w+ note)\b"),
-    ("internal id", r"\b(?:AI-\d+|T\d[a-z]?\b|[A-E]\d(?:\.\w+)?\b|chat_message\w*|\w+\.(?:csv|py|json|md)\b)"),
     ("X not Y heading", r"<h[1-4][^>]*>[^<]*\b(?:not|vs\.?|versus)\b[^<]*</h[1-4]>"),
+    ("not-A-but-B pivot", r"\bnot only\b[^.<]{0,120}?\bbut\b|\b(?:is|are|was|were)(?: not|n.t) (?:just |only |merely |simply )?about\b|"
+                          r"\b(?:is|are)(?: not|n.t) (?:just|only|merely|simply)\b|"
+                          r"\b(?:it|this)(?:.s| is) not\b[^.<]{0,80}?[,;] (?:it|this)(?:.s| is)\b|"
+                          r"\bwe (?:do not|don.t)\b[^.<]{0,80}?[,;.] we\b"),
+    ("recap ending", r"\b(?:in summary|to summari[sz]e|in conclusion)\b"),
+    ("narrated structure", r"\b(?:in this section|below we|(?:first|next), we.ll|now let.s|let.s explore|we.ll explore)\b"),
 ]
 NARRATIVE_HEAD = re.compile(r"^(?:what|how|why|when|where|the |two ways|here|this|we |our )", re.I)
+MAX_SENTENCES, MAX_WORDS, MAX_SECTIONS = 3, 100, 7
 
 
 def text_of(fragment):
     return htmlmod.unescape(re.sub(r"<[^>]+>", " ", fragment)).strip()
 
 
+def load_words(path):
+    """Return (fail_rules, warn_rules) from a word config, each a list of (kind, regex)."""
+    if not path or path.lower() == "none":
+        return [], []
+    with open(path, encoding="utf-8") as fh:
+        cfg = json.load(fh)
+    out = []
+    for level in ("fail", "warn"):
+        rules = []
+        for kind, pats in (cfg.get(level) or {}).items():
+            if pats:
+                rules.append((kind, "|".join(f"(?:{p})" for p in pats)))
+        out.append(rules)
+    return out[0], out[1]
+
+
 def main():
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     ap.add_argument("file")
     ap.add_argument("--names", help="file with one personal name per line")
+    ap.add_argument("--words", default=DEFAULT_WORDS, metavar="FILE",
+                    help="house word config (JSON); default: house_words.json beside this script; 'none' to skip")
+    ap.add_argument("--id-pattern", action="append", default=[], metavar="REGEX",
+                    help="extra internal-id pattern to warn on (repeatable)")
     ap.add_argument("--allow", action="append", default=[], metavar="REGEX")
     ap.add_argument("--strict", action="store_true")
     a = ap.parse_args()
-    src = open(a.file, encoding="utf-8").read()
+    with open(a.file, encoding="utf-8") as fh:
+        src = fh.read()
     allow = [re.compile(p, re.I) for p in a.allow]
     fails, warns = [], []
 
@@ -63,14 +104,20 @@ def main():
     # visible text only for word checks (drop style/script/svg internals)
     visible = re.sub(r"<(style|script)[^>]*>.*?</\1>", " ", src, flags=re.S | re.I)
     visible_txt = re.sub(r"<svg.*?</svg>", " ", visible, flags=re.S | re.I)
+    # house words are not flagged inside <code>
+    word_txt = re.sub(r"<code[^>]*>.*?</code>", " ", visible_txt, flags=re.S | re.I)
 
-    rules = list(HARD)
+    house_fail, house_warn = load_words(a.words)
+
+    rules = list(HARD) + house_fail
     if a.names:
-        names = [l.strip() for l in open(a.names) if l.strip()]
+        with open(a.names, encoding="utf-8") as fh:
+            names = [l.strip() for l in fh if l.strip()]
         if names:
             rules.append(("personal name", r"\b(?:" + "|".join(map(re.escape, names)) + r")\b"))
+    house_kinds = {k for k, _ in house_fail}
     for kind, pat in rules:
-        target = src if kind in ("chart library", "mermaid", "em-dash") else visible_txt
+        target = src if kind in RAW_SOURCE_KINDS else (word_txt if kind in house_kinds else visible_txt)
         for m in re.finditer(pat, target, re.I):
             frag = target[max(0, m.start() - 50):m.end() + 50]
             if ok(frag):
@@ -81,11 +128,21 @@ def main():
         fails.append(("missing <title>", "", "put <title> in the first 8 KB"))
     for m in re.finditer(r"<script[^>]+src=[\"']([^\"']+)", src, re.I):
         if not re.match(CDN_OK, m.group(1)):
-            fails.append(("script src outside CDN allowlist", m.group(1), ""))
+            fails.append(("script src outside CDN allowlist", m.group(1),
+                          "only cdnjs.cloudflare.com and cdn.jsdelivr.net/npm/ are allowed"))
 
-    for kind, pat in WARN:
-        for m in re.finditer(pat, visible_txt, re.I):
-            frag = visible_txt[max(0, m.start() - 50):m.end() + 50]
+    # internal ids are case-sensitive (tracker keys are upper case)
+    id_pats = DEFAULT_ID_PATTERNS + list(a.id_pattern)
+    warn_rules = [(k, p, re.I) for k, p in WARN + house_warn if k != "internal id"]
+    for k, p in house_warn:
+        if k == "internal id":
+            id_pats.append(p)
+    warn_rules.append(("internal id", "|".join(f"(?:{p})" for p in id_pats), 0))
+
+    for kind, pat, flags in warn_rules:
+        target = visible_txt
+        for m in re.finditer(pat, target, flags):
+            frag = target[max(0, m.start() - 50):m.end() + 50]
             if ok(frag):
                 continue
             warns.append((kind, m.group(0), " ".join(text_of(frag).split())[:120]))
@@ -101,10 +158,10 @@ def main():
     for p in paras:
         w = len(p.split())
         sents = len(re.findall(r"[.!?](?:\s|$)", p))
-        if w > 100 or sents > 4:
+        if w > MAX_WORDS or sents > MAX_SENTENCES:
             warns.append(("long paragraph", f"{w} words, {sents} sentences", p[:100]))
     n_sec = len(re.findall(r"<h2\b", visible, re.I))
-    if n_sec > 8:
+    if n_sec > MAX_SECTIONS:
         warns.append(("many sections", f"{n_sec} h2", "pre-reads and reports run 4 to 7"))
 
     has_media = bool(re.search(r"prefers-color-scheme:\s*dark", src))

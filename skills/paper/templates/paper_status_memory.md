@@ -5,9 +5,10 @@ metadata:
   type: project
 ---
 
-Paper "<Title>" (<organisation> / <product>). One-paragraph thesis. Sibling papers: [[<other-paper>-status]].
+Paper "<Title>" (<organisation / product>). One-paragraph thesis. Sibling papers: [[<other-paper>-status]].
 
 **Why:** <first draft date; what phase the paper is in>.
+**Reference papers:** <team papers used for voice and structure, if any>.
 **How to apply:** read before touching either document. Records which numbers are authoritative and which are superseded so no stale table is reintroduced.
 
 ## Two Deliverables
@@ -30,7 +31,7 @@ Venue, target format and length, author list and order (provisional or confirmed
 
 ## Style Rules
 
-No em-dashes. Banned: arm, instrument, license, contract, ground (filler), leverage, robust, seamless, delve, unlock. Title Case noun headings, Arabic numbering. Bullets and tables over prose. Never fabricate a number; gaps go to Appendix B. Charts: rust accent plus neutrals, hatch, direct labels. Check: `bash ~/.claude/skills/paper/scripts/check_style.sh sections/*.tex main.tex paper/*.html`.
+House defaults unless overridden here: no em-dashes; banned words per `<skill-dir>/scripts/banned_words.txt`; Title Case noun headings, Arabic numbering; bullets and tables over prose; charts in rust accent plus neutrals, hatch, direct labels. Never fabricate a number; gaps go to the reconciliation register in `CRITICAL_REVIEW.md`. Per-paper overrides: <none | list>. Limitations section or Future Work only: <decision>. Check: `bash <skill-dir>/scripts/check_style.sh sections/ main.tex paper/*.html` and `python3 <skill-dir>/scripts/check_number_placement.py arxiv_paper/`.
 
 ## Decisions Applied
 
@@ -42,7 +43,7 @@ Folds, merges, drops, renames (with the reason and the date). Label conventions 
 - Author list and order status.
 - Vendor naming decisions.
 - Data gaps: files not located, filters not reproducible, missing reports.
-- Git status of the project folder (repo or not; the author's default is commit-and-push).
+- Git status of the project folder (repo or not) and the agreed commit default, asked once and recorded here; push only after confirmation.
 
 ## Immediate Next Step
 

@@ -1,19 +1,26 @@
-"""Gate for where result numbers live in a LaTeX paper.
+r"""Gate for where result numbers live in a LaTeX paper.
 
-Author ruling: experiment results are quoted in four homes only, Abstract, Introduction,
+Rule: experiment results are quoted in four homes only, Abstract, Introduction,
 Results, Conclusion. Other sections describe and cite a table or figure by number.
 Figures, flowcharts and captions carry structure, not result values, unless the figure
 is itself a chart drawn from the data.
 
-    python3 check_number_placement.py <arxiv_paper dir> [--allow REGEX ...] [--data-dir DIR ...] [--strict]
+    python3 check_number_placement.py <paper dir> [--allow REGEX ...] [--exempt REGEX ...]
+                                      [--exempt-file FILE ...] [--data-dir DIR ...] [--strict]
 
 What it does
   FAIL  result-type numerals (percentages, decimals, counts of four or more digits,
         currency, ms/s/MB values) in the prose of any sections/*.tex whose name is not
-        an allowed home. Text inside table environments, math, comments, \\cite, \\ref,
-        \\label, \\includegraphics and macros' arguments is skipped: tables are allowed
+        an allowed home. Text inside table environments, math, comments, \cite, \ref,
+        \label, \includegraphics and macros' arguments is skipped: tables are allowed
         carriers anywhere.
-  warn  result-type numerals inside \\caption{...} in any section, and inside label text
+  warn  a whole table environment carrying result-type numerals in a section that is not
+        an allowed home. The prose scan skips table bodies, so a results table parked in
+        a Module, Method or Data section passes every other check silently: this is the
+        only thing that catches it. Judgement is the reader's, because a production
+        measurement or a dataset table legitimately lives outside Results. Silence one
+        with "% table-ok: <reason>" on any line inside the environment.
+  warn  result-type numerals inside \caption{...} in any section, and inside label text
         of figures/*.dot (a hand-authored diagram printing a value).
   warn  a chart output (figures/chart_*.{pdf,svg}) older than any CSV in the data dirs
         (default: figures/, ../paper/materials, ../materials), which means the chart was
@@ -24,8 +31,11 @@ results, conclusion (case-insensitive). Add --allow to extend (for example --all
 when a production-rollout section carries its own metrics table).
 
 Exemptions inside prose: years (19xx, 20xx), section/figure/table references, ids
-(M0, E1, RQ1, B0, P1, S1, Route A), model names with digits, ordinals, percentile
-labels, small bare integers (three digits or fewer, no unit, no decimal).
+(M0, E1, RQ1, B0, P1, S1), a short generic list of model and hardware names with digits
+(GPT-4o, Llama 3, A100), ordinals, percentile labels, small bare integers (three digits or
+fewer, no unit, no decimal). Add the paper's own names with --exempt REGEX (repeatable) or
+--exempt-file FILE (one regex per line, '#' comments allowed), for example
+--exempt '\bMyModel[\w.-]*\d[\w.-]*' or a model list kept in the paper folder.
 
 A source line ending in "% number-ok: <reason>" is exempt from the prose scan. Use it
 for a method parameter or a dataset count defined in that sentence, never for a result.
@@ -43,12 +53,18 @@ HOMES = re.compile(r"(abstract|intro|introduction|results|conclusion)", re.I)
 RESULT_NUM = re.compile(
     r"(?<![A-Za-z0-9.\-])"
     r"(?:"
-    r"\$?\s?\d{1,3}(?:,\d{3})+(?:\.\d+)?"            # 1,163,658  $3,014
-    r"|\$\s?\d+(?:\.\d+)?"                           # $0.012
-    r"|\d+\.\d+"                                     # 0.81  90.29
-    r"|\d{4,}"                                       # 12246 (years handled below)
+    r"\$?\s?\d{1,3}(?:,\d{3})+(?:\.\d+)?"            # 1,234,567  $1,000
+    r"|\$\s?\d+(?:\.\d+)?"                           # $0.05
+    r"|\d+\.\d+"                                     # 0.42  12.34
+    r"|\d{4,}"                                       # 10000 (years handled below)
     r"|\d+(?:\.\d+)?[\s~]*(?:\\%|%|ms\b|s\b|MB\b|GB\b|EUR\b|USD\b|dB\b|min\b|minutes\b|seconds\b|hours\b)"
     r")"
+)
+# Generic model and hardware families whose names carry digits. Paper-specific names go in
+# --exempt / --exempt-file rather than here.
+DEFAULT_MODELS = (
+    r"\b(?:GPT|Claude|Gemini|Gemma|Llama|Qwen|Mistral|Mixtral|Phi|Whisper|wav2vec|ViT|ResNet|YOLO"
+    r"|EfficientNet|MobileNet|ConvNeXt|BERT|T5|A100|H100|L40S|V100|T4)(?:[\w\-.]*|[\s~])\d[\w\-.]*"
 )
 EXEMPT = [
     re.compile(p, re.I) for p in (
@@ -58,32 +74,47 @@ EXEMPT = [
         r"\\(?:input|include|bibliography|url|href)\{[^}]*\}",
         r"\b(?:Section|Sec\.|Table|Tab\.|Figure|Fig\.|Appendix|Eq\.|Equation)~?\s*\d+(?:\.\d+)*",
         r"\b(?:M|E|B|P|S|RQ|C|R)\d{1,2}\b",                           # ids
-        r"\bRoute\s+[AB]\b",
-        r"\b(?:GPT|Qwen|Gemini|Gemma|Llama|Claude|Sonnet|Opus|Haiku|Whisper|IndicWhisper|Sarvam|Conformer|Canary|Parakeet|wav2vec|MMS|Deepgram|DaViT|YOLO|MobileNet|EfficientNet|ConvNeXt|ViT|Kimi|Pixtral|Mistral|Mixtral|Chirp|DFN|DeepFilterNet|Phi|Grok|Nova|Titan|L40S|A100|H100)(?:[\w\-.]*|[\s~])\d[\w\-.]*",
+        DEFAULT_MODELS,
+        r"\d+(?:\.\d+)?\s*(?:cm|mm|pt|em|ex|in|bp|dd|cc)\b",          # LaTeX lengths: p{3.6cm}, 4pt
+        r"\d+(?:\.\d+)?\s*\\(?:text|line|column|page)width\b",         # width=0.92\textwidth
         r"\b\d+(?:st|nd|rd|th)\b",
         r"\bp\d{1,3}\b|\bF1\b|\bF\d\b",
         r"\bv\d+(?:\.\d+)*\b",                                        # versions
         r"\\(?:pilot|todo|flag)\b",
     )
 ]
+EXTRA_EXEMPT = []  # filled from --exempt / --exempt-file
 TABLE_ENVS = ("table", "table*", "tabular", "tabular*", "tabularx", "longtable", "booktabs", "threeparttable")
 MATH_ENVS = ("equation", "equation*", "align", "align*", "gather", "math", "displaymath")
+
+
+def blank(m):
+    """Replacement that keeps every newline, so line numbers in the stripped text still
+    match the source file."""
+    return re.sub(r"[^\n]", " ", m.group(0))
+
+
+def blank_str(s):
+    return re.sub(r"[^\n]", " ", s)
 
 
 def strip_env(text, envs):
     for env in envs:
         e = re.escape(env)
-        text = re.sub(r"\\begin\{" + e + r"\}.*?\\end\{" + e + r"\}", " ", text, flags=re.S)
+        text = re.sub(r"\\begin\{" + e + r"\}.*?\\end\{" + e + r"\}", blank, text, flags=re.S)
     return text
 
 
 OPT_OUT = re.compile(r"%\s*number-ok\b", re.I)
+TABLE_OPT_OUT = re.compile(r"%\s*table-ok\b", re.I)
 
 
 def strip_comments(text):
     """Drop LaTeX comments. A line ending in '% number-ok: <reason>' is blanked entirely:
-    the author has said this value belongs here (a method parameter, a dataset size that
-    the sentence defines). The reason stays visible in the source."""
+    it marks a value that belongs in this sentence (a method parameter, a dataset size that
+    the sentence defines). The reason stays visible in the source. The marker must end the
+    line: LaTeX drops everything after '%', so a mid-line marker deletes the rest of the
+    sentence from the PDF."""
     kept = []
     for line in text.split("\n"):
         if OPT_OUT.search(line):
@@ -94,10 +125,10 @@ def strip_comments(text):
 
 
 def strip_math(text):
-    text = re.sub(r"\$\$.*?\$\$", " ", text, flags=re.S)
-    text = re.sub(r"(?<!\\)\$[^$]*\$", " ", text)
-    text = re.sub(r"\\\[.*?\\\]", " ", text, flags=re.S)
-    text = re.sub(r"\\\(.*?\\\)", " ", text, flags=re.S)
+    text = re.sub(r"\$\$.*?\$\$", blank, text, flags=re.S)
+    text = re.sub(r"(?<!\\)\$[^$]*\$", blank, text)
+    text = re.sub(r"\\\[.*?\\\]", blank, text, flags=re.S)
+    text = re.sub(r"\\\(.*?\\\)", blank, text, flags=re.S)
     return strip_env(text, MATH_ENVS)
 
 
@@ -118,6 +149,20 @@ def captions(text):
     out = []
     for m in re.finditer(r"\\caption\*?(?:\[[^\]]*\])?\{", text):
         out.append(balanced_arg(text, m.end() - 1))
+    return out
+
+
+def table_envs(text):
+    """(label, raw body) for every table environment, outermost first."""
+    out = []
+    for m in re.finditer(r"\\begin\{(table\*?|longtable)\}", text):
+        env = m.group(1)
+        end = re.search(r"\\end\{" + re.escape(env) + r"\}", text[m.end():])
+        if not end:
+            continue
+        raw = text[m.end():m.end() + end.start()]
+        lab = re.search(r"\\label\{([^}]*)\}", raw)
+        out.append((lab.group(1) if lab else "(unlabelled)", raw))
     return out
 
 
@@ -142,7 +187,7 @@ def dot_labels(txt):
 
 def mask(text):
     out = list(text)
-    for pat in EXEMPT:
+    for pat in EXEMPT + EXTRA_EXEMPT:
         for m in pat.finditer(text):
             for i in range(m.start(), m.end()):
                 out[i] = " "
@@ -168,10 +213,22 @@ def main():
     ap.add_argument("paper_dir", type=Path, help="folder holding sections/ and figures/")
     ap.add_argument("--allow", action="append", default=[], metavar="REGEX",
                     help="extra section-name pattern allowed to quote results (repeatable)")
+    ap.add_argument("--exempt", action="append", default=[], metavar="REGEX",
+                    help="extra prose pattern to ignore, e.g. a model name with digits (repeatable)")
+    ap.add_argument("--exempt-file", action="append", default=[], type=Path, metavar="FILE",
+                    help="file of --exempt patterns, one regex per line, '#' comments allowed (repeatable)")
     ap.add_argument("--data-dir", action="append", default=[], type=Path,
                     help="folder(s) holding the CSVs charts draw from (repeatable)")
     ap.add_argument("--strict", action="store_true")
     a = ap.parse_args()
+
+    for p in a.exempt:
+        EXTRA_EXEMPT.append(re.compile(p, re.I))
+    for ef in a.exempt_file:
+        for ln in ef.read_text(encoding="utf-8").splitlines():
+            ln = ln.strip()
+            if ln and not ln.startswith("#"):
+                EXTRA_EXEMPT.append(re.compile(ln, re.I))
 
     root = a.paper_dir.resolve()
     sections = sorted((root / "sections").glob("*.tex")) if (root / "sections").exists() else sorted(root.glob("*.tex"))
@@ -190,13 +247,25 @@ def main():
                 warns.append(("caption carries a value", f.name, None, tok, context(cap, s, e)))
         if is_home or f.stem.lower().startswith("appendix"):
             continue
+        # a results table parked outside Results: the prose scan below skips table bodies,
+        # so nothing else in this gate can see it
+        for lab, tbl in table_envs(raw):
+            if TABLE_OPT_OUT.search(tbl):
+                continue
+            cells = strip_comments(tbl)
+            for cap in captions(cells):
+                cells = cells.replace(cap, blank_str(cap), 1)
+            toks = list(dict.fromkeys(t for t, _s, _e in numerals(strip_math(cells))))
+            if toks:
+                shown = ", ".join(toks[:6]) + (" and more" if len(toks) > 6 else "")
+                warns.append(("table carries values outside the four homes", f.name, None, lab,
+                              "carries " + shown))
         body = strip_comments(raw)
         body = strip_env(body, TABLE_ENVS)
         body = strip_math(body)
-        # drop caption contents from the prose scan (already warned)
-        body = re.sub(r"\\caption\*?(?:\[[^\]]*\])?\{", lambda m: "\\caption{" + " " * 0, body)
+        # drop caption contents from the prose scan (already warned), keeping line breaks
         for cap in captions(body):
-            body = body.replace(cap, " " * len(cap), 1)
+            body = body.replace(cap, blank_str(cap), 1)
         for tok, s, e in numerals(body):
             fails.append(("result value outside the four homes", f.name, line_no(body, s), tok, context(body, s, e)))
 

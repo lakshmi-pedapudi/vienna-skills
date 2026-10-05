@@ -1,0 +1,15 @@
+# House banned words for check_style.sh. One Perl regex per line; blank lines and lines
+# starting with '#' are ignored. Every match is a hard failure (exit 1).
+# Edit this file to change the house list. Rationale and replacements: references/style.md, Banned Words.
+# Literal uses (file names, proper nouns) are cleared with an allow pattern, not by editing this list:
+# see allow.txt, --allow REGEX, or a per-paper .paper-style-allow file.
+\b[Aa]rms?\b
+\b[Ii]nstrument\w*
+\b[Ll]icens\w*
+\b[Cc]ontract\w*
+\b[Gg]round\w*
+\b[Ll]everag\w*
+\b[Rr]obust\w*
+\b[Ss]eamless\w*
+\b[Dd]elv\w*
+\b[Uu]nlock\w*

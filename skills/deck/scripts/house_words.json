@@ -1,0 +1,29 @@
+{
+  "_about": "House word lists for check_words.py. Every entry is a case-insensitive regex matched as a whole word, except codes, which are case-sensitive. Any hit fails the gate. Edit freely for your team; keep one-deck terms in a project copy passed with --words.",
+  "title_max_words": 4,
+  "jargon": [
+    "blast radius",
+    "mitigation in flight",
+    "force multiplier",
+    "fan-?out",
+    "cohort",
+    "surface area",
+    "operationali[sz]e\\w*",
+    "headline"
+  ],
+  "banned": [
+    "Theme\\s*\\d*",
+    "Why (?:it|this) matters",
+    "What this means",
+    "Cross-link:"
+  ],
+  "invented": [
+    "under the rule",
+    "verdict",
+    "axes"
+  ],
+  "codes": [
+    "[A-E]\\d(?:\\.\\w+)?",
+    "T\\d\\.\\d"
+  ]
+}

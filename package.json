@@ -1,6 +1,6 @@
 {
   "name": "vienna-skills",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Evidence-first Claude Code skills for research papers, slide decks and published HTML pages: /paper, /deck, /artifact",
   "bin": { "vienna-skills": "bin/vienna-skills" },
   "files": ["bin", "skills", "docs", "install.sh", "README.md", "LICENSE", ".claude-plugin"],
