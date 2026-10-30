@@ -1,9 +1,9 @@
 {
   "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
   "name": "vienna-skills",
-  "description": "Evidence-first skills for research papers, slide decks and published HTML pages.",
+  "description": "Evidence-first skills for research papers, slide decks, published HTML pages and demo videos.",
   "owner": {"name": "Lakshmi Pedapudi", "url": "https://github.com/lakshmi-pedapudi"},
   "plugins": [
-    {"name": "vienna-skills", "description": "/paper, /deck and /artifact skills", "source": "./", "category": "productivity"}
+    {"name": "vienna-skills", "description": "/paper, /deck, /artifact and /demo-video skills", "source": "./", "category": "productivity"}
   ]
 }

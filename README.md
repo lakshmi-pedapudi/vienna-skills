@@ -1,6 +1,6 @@
 # vienna-skills
 
-Three [Claude Code](https://claude.com/claude-code) skills for producing research communication with evidence discipline: an arXiv paper, a slide deck, and a published HTML page (Claude artifact). Extracted from skills in daily use on an applied ML team since 2026, with every person, organisation, vendor and funder replaced by a role. What remains is the method: how the work is sequenced, what the author is asked and when, which words are banned, where numbers may appear, and the scripts that check all of it before anything ships.
+Four [Claude Code](https://claude.com/claude-code) skills for producing research communication with evidence discipline: an arXiv paper, a slide deck, a published HTML page (Claude artifact), and a demo video. Extracted from skills in daily use on an applied ML team since 2026, with every person, organisation, vendor and funder replaced by a role. What remains is the method: how the work is sequenced, what the author is asked and when, which words are banned, where numbers may appear, and the scripts that check all of it before anything ships.
 
 ## Skills
 
@@ -9,10 +9,11 @@ Three [Claude Code](https://claude.com/claude-code) skills for producing researc
 | [paper](docs/skills/paper.md) | `/paper` | Use when writing, reviewing, or revising a research paper, arXiv preprint, whitepaper, or the reviewer-facing HTML artifact that precedes one. |
 | [deck](docs/skills/deck.md) | `/deck` | Use when building, revising, reviewing, or converting a slide deck or presentation: board or leadership decks, funder, partner or customer decks, workshop decks, pre-reads, executive talks, methodology decks, tech updates, Google Slides or PDF exports. |
 | [artifact](docs/skills/artifact.md) | `/artifact` | Use when building, revising, reviewing, publishing, or exporting a Claude artifact (a published HTML page): pre-reads for external stakeholders, analysis reports and dashboards, methodology articles, reviewer-facing paper drafts, design documents, findings pages with charts and example tables. |
+| [demo-video](skills/demo-video/SKILL.md) | `/demo-video` | Use when making a product demo, explainer, walkthrough or launch video, from raw footage, from screens rebuilt in HTML, or both. Drives the open-source video-use and HyperFrames skills and sets the evidence rules for what may appear on screen. |
 
 Each skill is a folder with `SKILL.md` (overview, inputs, outputs, workflow, quality standards, limitations, troubleshooting), `references/` (workflow, style, review, pitfalls and topic guides), `templates/` and `scripts/` (gates that exit non-zero, with house word lists in editable config files). Claude Code loads the skill when the task matches the description or when you type the slash command.
 
-## Three Rules Shared by All Three
+## Three Rules Shared by All Skills
 
 1. **Evidence upward, one element at a time.** Materials first, an approved skeleton second, then one section, table or chart per iteration. Nothing is invented to look complete; a missing number renders as a visible pending marker with an owner.
 2. **Checkpoint questions, even when running unattended.** At topic segregation, skeleton, rough themes and before any restructure, the skill stops and asks one or two short questions with a recommended option. Nowhere else.
@@ -42,12 +43,18 @@ Or as a Claude Code plugin:
 
 Skills are symlinked, so `git pull` (or `bin/vienna-skills update`) refreshes them in place. Prerequisites for the scripts: `python3` with `python-pptx`, `matplotlib`, `pillow` (deck), Graphviz `dot` (deck and paper figures), `perl` (paper style gate). References write script paths as `<skill-dir>`, wherever the skill is installed. Deck build scripts read it from `DECK_SKILL_DIR` (default `~/.claude/skills/deck`).
 
+Demo video: `bash tools/video/setup.sh` installs the two video tools it drives (video-use, MIT; HyperFrames, Apache-2.0) at pinned commits and links their skills. It needs `ffmpeg`, Node 22+, `uv`, and an ElevenLabs key for footage transcription.
+
 ## Adaptation
 
 - Palettes and typography are constants at the top of `skills/deck/scripts/deck_primitives.py` and in `skills/artifact/templates/page_skeleton.html`. Replace the corporate example with your brand once; everything downstream reads it.
 - House word lists are config files, not code: `skills/paper/scripts/banned_words.txt` and `allow.txt`, `skills/deck/scripts/house_words.json`, `skills/artifact/scripts/house_words.json`. Edit them to your house style, or point a gate at another file with `--words`. Built-in checks (em-dashes, AI-tell and hype phrases, sentence-shape warnings) stay in the scripts.
 - The review-comment prefix defaults to `REVIEW:` (the 1.0 default `Reviewer:` still matches); pass `--prefix` (repeatable) to `extract_review_comments.py` for your own. The figures-registry columns are documented in `skills/deck/references/build.md`.
 - `references/pitfalls.md` in each skill lists the rationalisations and failure modes that the rules exist to stop, each pointing to the file that holds its rule. Add your own as rules in the relevant reference file, with a one-line reason.
+
+## Changes in 1.2.0
+
+- New `demo-video` skill and `tools/video/setup.sh`, which installs video-use and HyperFrames at pinned commits.
 
 ## Changes in 1.1.0
 
